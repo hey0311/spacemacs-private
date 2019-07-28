@@ -106,8 +106,13 @@
       ;; (add-to-list 'auto-mode-alist '("\.org\\'" . org-mode))
 
       (setq org-todo-keywords
-            (quote ((sequence "TODO(t)" "STARTED(s)" "|" "DONE(d!/!)")
-                    (sequence "WAITING(w@/!)" "SOMEDAY(S)" "|" "CANCELLED(c@/!)" "MEETING(m)" "PHONE(p)"))))
+            (quote ( (sequence "SOMEDAY(S)" "TODO(t!)" "|" "DONE(d!)" "CANCELLED(c)" )
+                    )))
+      ;; 调试好久的颜色，效果超赞！todo keywords 增加背景色
+      (setf org-todo-keyword-faces '(("SOMEDAY" . (:foreground "white" :background "#95A5A6"   :weight bold))
+                                     ("TODO" . (:foreground "white" :background "#2E8B57"  :weight bold))
+                                     ("DONE" . (:foreground "white" :background "#3498DB"  :weight bold))
+                                     ("CANCELLED" . (:foreground "white" :background "#3498DB" :weight bold))))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       ;; Org clock
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -280,7 +285,9 @@
       (setq org-agenda-file-code-snippet (expand-file-name "snippet.org" org-agenda-dir))
       (setq org-default-notes-file (expand-file-name "gtd.org" org-agenda-dir))
       (setq org-agenda-file-blogposts (expand-file-name "all-posts.org" org-agenda-dir))
+      (setq org-agenda-file-project (expand-file-name "project/" org-agenda-dir))
       (setq org-agenda-files (list org-agenda-dir))
+      (add-to-list 'org-agenda-files "~/notes/project/")
 
       ;; C-n for the next org agenda item
       (define-key org-agenda-mode-map (kbd "C-p") 'org-agenda-previous-item)

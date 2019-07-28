@@ -120,7 +120,7 @@ This function should only modify configuration layer settings."
                     evil-indent-plus volatile-highlights smartparens
                     spaceline holy-mode skewer-mode rainbow-delimiters
                     highlight-indentation vi-tilde-fringe eyebrowse ws-butler
-                    org-bullets smooth-scrolling org-repo-todo org-download org-timer
+                    smooth-scrolling org-repo-todo org-download org-timer
                     livid-mode git-gutter git-gutter-fringe  evil-escape
                     leuven-theme gh-md evil-lisp-state spray lorem-ipsum symon
                     ac-ispell ace-jump-mode auto-complete auto-dictionary
@@ -240,8 +240,9 @@ It should only modify the values of Spacemacs settings."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(solarized-light
-                         solarized-dark)
+   dotspacemacs-themes '(doom-one
+                         doom-nova
+                         spacemacs-dark)
    ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
    ;; `all-the-icons', `custom', `doom', `vim-powerline' and `vanilla'. The
    ;; first three are spaceline themes. `doom' is the doom-emacs mode-line.
@@ -251,7 +252,7 @@ It should only modify the values of Spacemacs settings."
    ;; (default '(spacemacs :separator wave :separator-scale 1.5))
    dotspacemacs-mode-line-theme '(spacemacs :separator wave :separator-scale 1.5)
    ;; If non nil the cursor color matches the state color in GUI Emacs.
-   dotspacemacs-colorize-cursor-according-to-state t
+   dotspacemacs-colorize-cursor-according-to-state nil
 
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
@@ -497,7 +498,10 @@ dump."
   ;;               '(("melpa-cn" . "http://elpa.emacs-china.org/melpa/")
   ;;                 ("org-cn"   . "http://elpa.emacs-china.org/org/")
   ;;                 ("gnu-cn"   . "http://elpa.emacs-china.org/gnu/")))
-
+(setq configuration-layer--elpa-archives  
+    '(("melpa-cn" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")  
+      ("org-cn"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/org/")  
+      ("gnu-cn"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")))  
   
   (setq term-char-mode-point-at-process-mark nil)
 
