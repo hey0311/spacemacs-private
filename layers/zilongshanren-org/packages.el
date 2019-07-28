@@ -19,6 +19,7 @@
     deft
     sound-wav
     ob-typescript
+    org-super-agenda
     ;; org-tree-slide
     ;; ox-reveal
     ;; worf
@@ -27,6 +28,8 @@
     )
   )
 
+(defun zilongshanren-org/init-org-super-agenda ()
+  )
 (defun zilongshanren-org/post-init-org-pomodoro ()
   (zilongshanren/pomodoro-notification))
 
@@ -106,8 +109,8 @@
       ;; (add-to-list 'auto-mode-alist '("\.org\\'" . org-mode))
 
       (setq org-todo-keywords
-            (quote ( (sequence "SOMEDAY(S)" "TODO(t!)" "|" "DONE(d!)" "CANCELLED(c)" )
-                    )))
+            (quote ( (sequence "SOMEDAY(s)" "TODO(t!)" "|" "DONE(d!)" "CANCELLED(c)" )
+                     )))
       ;; 调试好久的颜色，效果超赞！todo keywords 增加背景色
       (setf org-todo-keyword-faces '(("SOMEDAY" . (:foreground "white" :background "#95A5A6"   :weight bold))
                                      ("TODO" . (:foreground "white" :background "#2E8B57"  :weight bold))
@@ -287,7 +290,8 @@
       (setq org-agenda-file-blogposts (expand-file-name "all-posts.org" org-agenda-dir))
       (setq org-agenda-file-project (expand-file-name "project/" org-agenda-dir))
       (setq org-agenda-files (list org-agenda-dir))
-      (add-to-list 'org-agenda-files "~/notes/project/")
+      (add-to-list 'org-agenda-files "~/notes/project//")
+      (add-to-list 'org-agenda-files "~/notes/hey/")
 
       ;; C-n for the next org agenda item
       (define-key org-agenda-mode-map (kbd "C-p") 'org-agenda-previous-item)
@@ -357,6 +361,7 @@ See `org-capture-templates' for more information."
       (setq org-agenda-custom-commands
             '(
               ("w" . "任务安排")
+              ("x" agenda)
               ("wa" "重要且紧急的任务" tags-todo "+PRIORITY=\"A\"")
               ("wb" "重要且不紧急的任务" tags-todo "-Weekly-Monthly-Daily+PRIORITY=\"B\"")
               ("wc" "不重要且紧急的任务" tags-todo "+PRIORITY=\"C\"")
@@ -364,11 +369,23 @@ See `org-capture-templates' for more information."
               ("p" . "项目安排")
               ("pw" tags-todo "PROJECT+WORK+CATEGORY=\"work\"")
               ("pl" tags-todo "PROJECT+DREAM+CATEGORY=\"zilongshanren\"")
+              ("r" "Weekly Overview" todo ""
+               ((org-super-agenda-groups
+                 '((:name "This Week's Tasks"
+                          :file-path "plan"
+                          :todo "TODO")
+                   (:name "Today's Tasks"
+                          :date today
+                          :todo "TODO")
+                   (:name "TODAY's DONE"
+                          :todo "DONE")
+                   (:discard (:anything))))))
               ("W" "Weekly Review"
                ((stuck "") ;; review stuck projects as designated by org-stuck-projects
                 (tags-todo "PROJECT") ;; review all projects (assuming you use todo keywords to designate projects)
                 ))))
 
+      (org-super-agenda-mode)
       (defvar zilongshanren-website-html-preamble
         "<div class='nav'>
 <ul>

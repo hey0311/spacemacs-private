@@ -629,6 +629,7 @@ Return a cons cell (X . Y)"
         (when (> offset 0) (forward-char offset)))))
 
   (global-set-key (kbd "<backtab>") 'un-indent-by-removing-4-spaces)
+  (global-set-key (kbd "C-c p s") 'helm-do-ag-project-root)
   (defun un-indent-by-removing-4-spaces ()
     "remove 4 spaces from beginning of of line"
     (interactive)
