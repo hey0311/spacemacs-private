@@ -36,8 +36,8 @@ This function should only modify configuration layer settings."
      ranger
      emoji
      (plantuml :variables plantuml-jar-path "~/.spacemacs.d/plantuml.jar")
-     lsp
-     dap
+     ;; lsp 加载失败
+     ;; dap 加载失败
      colors
      prodigy
      ;; github
@@ -75,7 +75,7 @@ This function should only modify configuration layer settings."
      markdown
      (org :variables org-want-todo-bindings t
           org-enable-hugo-support t)
-     gpu
+     ;; gpu 加载失败
      yaml
      react
      (python :variables
