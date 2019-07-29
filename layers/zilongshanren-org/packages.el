@@ -290,8 +290,9 @@
       (setq org-agenda-file-blogposts (expand-file-name "all-posts.org" org-agenda-dir))
       (setq org-agenda-file-project (expand-file-name "project/" org-agenda-dir))
       (setq org-agenda-files (list org-agenda-dir))
-      (add-to-list 'org-agenda-files "~/notes/project//")
-      (add-to-list 'org-agenda-files "~/notes/hey/")
+      (add-to-list 'org-agenda-files (expand-file-name "project/" org-agenda-dir))
+      (add-to-list 'org-agenda-files (expand-file-name "hey/" org-agenda-dir))
+      ;; (add-to-list 'org-agenda-files "~/notes/hey/")
 
       ;; C-n for the next org agenda item
       (define-key org-agenda-mode-map (kbd "C-p") 'org-agenda-previous-item)
