@@ -370,17 +370,23 @@ See `org-capture-templates' for more information."
               ("p" . "项目安排")
               ("pw" tags-todo "PROJECT+WORK+CATEGORY=\"work\"")
               ("pl" tags-todo "PROJECT+DREAM+CATEGORY=\"zilongshanren\"")
-              ("r" "Weekly Overview" todo ""
-               ((org-super-agenda-groups
-                 '((:name "This Week's Tasks"
-                          :file-path "plan"
-                          :todo "TODO")
-                   (:name "Today's Tasks"
-                          :date today
-                          :todo "TODO")
-                   (:name "TODAY's DONE"
-                          :todo "DONE")
-                   (:discard (:anything))))))
+              ("r" "Weekly Overview" 
+               ((agenda "" ((org-agenda-span 'day)
+                            (org-super-agenda-groups
+                             '((:name "Today"
+                                      :todo "TODO"
+                                      :scheduled today
+                                      :order 1)))))
+                (alltodo "" ((org-agenda-overriding-header "")
+                             (org-super-agenda-groups
+                  '((:name "This Week's Tasks1"
+                           :todo "TODO")
+                    (:name "Today's Tasks"
+                           :date today
+                           :todo "TODO")
+                    (:name "TODAY's DONE"
+                           :todo "DONE")
+                    (:discard (:anything))))))))
               ("W" "Weekly Review"
                ((stuck "") ;; review stuck projects as designated by org-stuck-projects
                 (tags-todo "PROJECT") ;; review all projects (assuming you use todo keywords to designate projects)
