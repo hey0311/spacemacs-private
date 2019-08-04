@@ -373,20 +373,17 @@ See `org-capture-templates' for more information."
               ("r" "Weekly Overview" 
                ((agenda "" ((org-agenda-span 'day)
                             (org-super-agenda-groups
-                             '((:name "Today"
-                                      :todo "TODO"
+                             '((:name "Delay"
+                                      :scheduled past)
+                               (:name "Today"
                                       :scheduled today
                                       :order 1)))))
                 (alltodo "" ((org-agenda-overriding-header "")
                              (org-super-agenda-groups
-                  '((:name "This Week's Tasks1"
-                           :todo "TODO")
-                    (:name "Today's Tasks"
-                           :date today
-                           :todo "TODO")
-                    (:name "TODAY's DONE"
-                           :todo "DONE")
-                    (:discard (:anything))))))))
+                              '((:name "This Week's Tasks"
+                                       :tag ("weekplan")
+                                       )
+                    (:discard (:anything t))))))))
               ("W" "Weekly Review"
                ((stuck "") ;; review stuck projects as designated by org-stuck-projects
                 (tags-todo "PROJECT") ;; review all projects (assuming you use todo keywords to designate projects)
