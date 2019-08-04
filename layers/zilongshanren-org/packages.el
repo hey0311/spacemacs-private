@@ -108,20 +108,18 @@
 
       ;; (add-to-list 'auto-mode-alist '("\.org\\'" . org-mode))
 
-      (setq org-todo-keywords
-            (quote ( (sequence "SOMEDAY(s)" "TODO(t!)" "|" "DONE(d!)" "CANCELLED(c)" )
-                     )))
+      ;; (setq org-todo-keywords (quote ( (sequence "SOMEDAY(s)" "TODO(t!)" "|" "DONE(d!)" "CANCELLED(c)" ))))
       ;; 调试好久的颜色，效果超赞！todo keywords 增加背景色
-      (setf org-todo-keyword-faces '(("SOMEDAY" . (:foreground "white" :background "#95A5A6"   :weight bold))
-                                     ("TODO" . (:foreground "white" :background "#2E8B57"  :weight bold))
-                                     ("DONE" . (:foreground "white" :background "#3498DB"  :weight bold))
-                                     ("CANCELLED" . (:foreground "white" :background "#3498DB" :weight bold))))
+      ;; (setf org-todo-keyword-faces '(("SOMEDAY" . (:foreground "white" :background "#95A5A6" :weight bold))
+      ;;                                ("TODO" . (:foreground "white" :background "#2E8B57" :weight bold))
+      ;;                                ("DONE" . (:foreground "white" :background "#3498DB" :weight bold))
+      ;;                                ("CANCELLED" . (:foreground "white" :background "#3498DB" :weight bold))))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       ;; Org clock
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
       ;; Change task state to STARTED when clocking in
-      (setq org-clock-in-switch-to-state "STARTED")
+      ;; (setq org-clock-in-switch-to-state "STARTED")
       ;; Save clock data and notes in the LOGBOOK drawer
       (setq org-clock-into-drawer t)
       ;; Removes clocked tasks with 0:00 duration
@@ -372,6 +370,8 @@ See `org-capture-templates' for more information."
               ("pl" tags-todo "PROJECT+DREAM+CATEGORY=\"zilongshanren\"")
               ("r" "Weekly Overview" 
                ((agenda "" ((org-agenda-span 'day)
+                            (org-agenda-compact-blocks t)
+                            ;; (org-agenda-prefix-format '((agenda . "  %?-12t")))
                             (org-super-agenda-groups
                              '((:name "Delay"
                                       :scheduled past)
@@ -381,7 +381,10 @@ See `org-capture-templates' for more information."
                 (alltodo "" ((org-agenda-overriding-header "")
                              (org-super-agenda-groups
                               '((:name "This Week's Tasks"
-                                       :tag ("weekplan")
+                                       :tag ("week")
+                                       )
+                                (:name "This Month's Tasks"
+                                       :tag ("monthplan")
                                        )
                     (:discard (:anything t))))))))
               ("W" "Weekly Review"
