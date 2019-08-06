@@ -354,7 +354,6 @@ See `org-capture-templates' for more information."
                        ;; symlink pointing to the actual location of all-posts.org!
                        (file+headline org-agenda-file-blogposts "Blog Ideas")
                        (function org-hugo-new-subtree-post-capture-template))))
-
       ;;An entry without a cookie is treated just like priority ' B '.
       ;;So when create new task, they are default 重要且紧急
       (setq org-agenda-custom-commands
@@ -370,7 +369,7 @@ See `org-capture-templates' for more information."
               ("pl" tags-todo "PROJECT+DREAM+CATEGORY=\"zilongshanren\"")
               ("r" "Weekly Overview" 
                ((agenda "" ((org-agenda-span 'day)
-                            (org-agenda-compact-blocks t)
+                            ;; (org-agenda-compact-blocks t)
                             ;; (org-agenda-prefix-format '((agenda . "  %?-12t")))
                             (org-super-agenda-groups
                              '((:name "Delay"
@@ -392,6 +391,14 @@ See `org-capture-templates' for more information."
                 (tags-todo "PROJECT") ;; review all projects (assuming you use todo keywords to designate projects)
                 ))))
 
+      (setq spacemacs-theme-org-agenda-height nil
+            org-agenda-skip-scheduled-if-done nil
+            org-agenda-skip-deadline-if-done t
+            org-agenda-include-deadlines t
+            org-agenda-include-diary t
+            org-agenda-block-separator nil
+            org-agenda-compact-blocks t
+            org-agenda-start-with-log-mode t)
       (org-super-agenda-mode)
       (defvar zilongshanren-website-html-preamble
         "<div class='nav'>
