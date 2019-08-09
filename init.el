@@ -521,6 +521,18 @@ dump."
 
 (defun dotspacemacs/user-config ()
 
+  ;; 不导出代码块-实现1：基于ascii扩展一种新的导出方法，但不知道怎么添加到mini-buffer，放弃
+  ;; (defun my-ascii-src-block (src-block contents info))
+  ;; (org-export-define-derived-backend 'my-ascii 'ascii
+  ;;   :translate-alist '((src-block . my-ascii-src-block)))
+
+  ;; 不导出代码块-实现 2，用filter，这里不知道怎么执行空函数，只好用message “”
+  (defun my-dont-export-src-block (text backend info)
+    (message ""))
+  (add-to-list 'org-export-filter-src-block-functions
+               'my-dont-export-src-block)
+
+  
   (eval-and-compile
     (if (fboundp 'window-inside-edges)
         ;; Emacs devel.
