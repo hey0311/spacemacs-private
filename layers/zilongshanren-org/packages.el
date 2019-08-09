@@ -86,7 +86,7 @@
       (setq org-agenda-use-tag-inheritance nil) ;; 3-4x speedup
       (setq org-agenda-window-setup 'current-window)
       (setq org-log-done t)
-
+      (setq org-ascii-text-width 9999)
       ;; 加密文章
       ;; "http://coldnew.github.io/blog/2013/07/13_5b094.html"
       ;; org-mode 設定
@@ -385,7 +385,7 @@ See `org-capture-templates' for more information."
                                 (:name "This Month's Tasks"
                                        :tag ("monthplan")
                                        )
-                    (:discard (:anything t))))))))
+                                (:discard (:anything t))))))))
               ("W" "Weekly Review"
                ((stuck "") ;; review stuck projects as designated by org-stuck-projects
                 (tags-todo "PROJECT") ;; review all projects (assuming you use todo keywords to designate projects)
