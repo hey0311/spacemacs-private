@@ -95,13 +95,13 @@ This function should only modify configuration layer settings."
      emacs-lisp
      (clojure :variables clojure-enable-fancify-symbols t)
      racket
-     (c-c++ :variables
-            c-c++-default-mode-for-headers 'c++-mode
-            c-c++-backend 'lsp-ccls
-            c-c++-lsp-executable (file-truename "/usr/local/bin/ccls"))
+     ;; (c-c++ :variables
+     ;;        c-c++-default-mode-for-headers 'c++-mode
+     ;;        c-c++-backend 'lsp-ccls
+     ;;        c-c++-lsp-executable (file-truename "/usr/local/bin/ccls"))
      zilongshanren
-     (chinese :variables chinese-default-input-method 'wubi
-              chinese-enable-youdao-dict t)
+     (chinese :variables
+              chinese-enable-fcitx t)
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -494,14 +494,28 @@ dump."
   )
 
 (defun dotspacemacs/user-init ()
-  ;; (setq-default configuration-layer-elpa-archives
-  ;;               '(("melpa-cn" . "http://elpa.emacs-china.org/melpa/")
-  ;;                 ("org-cn"   . "http://elpa.emacs-china.org/org/")
-  ;;                 ("gnu-cn"   . "http://elpa.emacs-china.org/gnu/")))
-(setq configuration-layer--elpa-archives  
-    '(("melpa-cn" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")  
-      ("org-cn"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/org/")  
-      ("gnu-cn"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")))  
+  ;; 设置输入法
+  (setq-default dotspacemacs-configuration-layers '((chinese :variables
+                                                             chinese-enable-fcitx t)))
+  (setq default-input-method "pyim")
+  (setq pyim-page-tooltip 'popup)
+  (setq pyim-punctuation-translate-p '(no yes auto))   ;使用半角标点。
+  (setq pyim-dicts
+        '((:name "dict1" :file
+                 "/Users/heyong/.spacemacs.d/pyim-bigdict.pyim"
+                 )))
+  (add-hook 'emacs-startup-hook
+            #'(lambda () (pyim-restart-1 t)))
+  (setq pyim-default-scheme 'pyim-shuangpin)
+   ;; (setq-default configuration-layer-elpa-archives
+   ;;               '(("melpa-cn" . "http://elpa.emacs-china.org/melpa/")
+   ;;                 ("org-cn"   . "http://elpa.emacs-china.org/org/")
+   ;;                 ("gnu-cn"   . "http://elpa.emacs-china.org/gnu/")))
+ (setq configuration-layer--elpa-archives  
+     '(("melpa-cn" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")  
+       ("org-cn"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/org/")  
+       ("gnu-cn"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")))
+
   
   (setq term-char-mode-point-at-process-mark nil)
 

@@ -358,6 +358,11 @@ See `org-capture-templates' for more information."
       ;;So when create new task, they are default 重要且紧急
       (setq org-agenda-custom-commands
             '(
+              ("f" occur-tree "基本")
+              ("c" todo "PROJECT"
+                ((org-agenda-skip-function '(org-agenda-skip-subtree-if
+                                             'regexp ":week:"))
+                 (org-agenda-overriding-header "Projects waiting for something: ")))
               ("w" . "任务安排")
               ("x" agenda)
               ("wa" "重要且紧急的任务" tags-todo "+PRIORITY=\"A\"")

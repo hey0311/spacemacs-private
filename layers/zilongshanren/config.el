@@ -11,10 +11,14 @@
     (setq
      org-agenda-dir "d:/notes"
      deft-dir "d:/notes"
+     config-dir "d:/notes"
+     ciku-file "/Users/heyong/.spacemacs.d/pyim-bigdict.pyim"
      blog-admin-dir "f:/zilongshanren.com")
   (setq
    org-agenda-dir "~/notes"
    deft-dir "~/notes"
+   config-dir "~/.spacemacs.d"
+   ciku-file "/Users/heyong/.spacemacs.d/pyim-bigdict.pyim"
    blog-admin-dir "~/zilongshanren.com"))
 
 
