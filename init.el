@@ -110,7 +110,7 @@ This function should only modify configuration layer settings."
    ;; To use a local version of a package, use the `:location' property:
    ;; '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
-   dotspacemacs-additional-packages '(sicp ssh-agency)
+   dotspacemacs-additional-packages '(sicp ssh-agency anki-editor)
 
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -534,7 +534,15 @@ dump."
   )
 
 (defun dotspacemacs/user-config ()
-
+  (defun define-anki()
+    "Insert “Yay!” at cursor position."
+    (interactive)
+    (insert "
+     :PROPERTIES:
+       :ANKI_NOTE_TYPE: Basic
+       :ANKI_DECK: Default
+     :END:
+    "))
   ;; 不导出代码块-实现1：基于ascii扩展一种新的导出方法，但不知道怎么添加到mini-buffer，放弃
   ;; (defun my-ascii-src-block (src-block contents info))
   ;; (org-export-define-derived-backend 'my-ascii 'ascii

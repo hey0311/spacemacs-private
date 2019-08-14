@@ -503,11 +503,9 @@ holding contextual information."
                          (concat (org-html--anchor preferred-id nil nil info)
                                  extra-ids
                                  full-text))))
-                  (concat (and (org-export-first-sibling-p headline info)
-                               (org-html-begin-plain-list type))
+                  (concat 
                           itemized-body
-                          (and (org-export-last-sibling-p headline info)
-                               (org-html-end-plain-list type))))
+                          ))
               (let ((extra-class (org-element-property :HTML_CONTAINER_CLASS headline))
                     (first-content (car (org-element-contents headline))))
                 ;; Standard headline.  Export it as a section.
