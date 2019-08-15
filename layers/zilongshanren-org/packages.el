@@ -25,10 +25,13 @@
     ;; worf
     ;; org-download
     ;; plain-org-wiki
+    org-drill
     )
   )
 
 (defun zilongshanren-org/init-org-super-agenda ()
+  )
+(defun zilongshanren-org/init-org-drill()
   )
 (defun zilongshanren-org/post-init-org-pomodoro ()
   (zilongshanren/pomodoro-notification))
