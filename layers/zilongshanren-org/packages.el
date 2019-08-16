@@ -291,10 +291,11 @@
       (setq org-agenda-file-blogposts (expand-file-name "all-posts.org" org-agenda-dir))
       (setq org-agenda-file-project (expand-file-name "project/" org-agenda-dir))
       (setq org-agenda-files (list org-agenda-dir))
-      (add-to-list 'org-agenda-files (expand-file-name "project/" org-agenda-dir))
-      (add-to-list 'org-agenda-files (expand-file-name "hey/" org-agenda-dir))
+      (add-to-list 'org-agenda-files org-agenda-dir)
       ;; (add-to-list 'org-agenda-files "~/notes/hey/")
 
+      ;; org-drill 添加范围
+      (setq org-drill-scope 'agenda)
       ;; C-n for the next org agenda item
       (define-key org-agenda-mode-map (kbd "C-p") 'org-agenda-previous-item)
 
@@ -363,9 +364,9 @@ See `org-capture-templates' for more information."
             '(
               ("f" occur-tree "基本")
               ("c" todo "PROJECT"
-                ((org-agenda-skip-function '(org-agenda-skip-subtree-if
-                                             'regexp ":week:"))
-                 (org-agenda-overriding-header "Projects waiting for something: ")))
+               ((org-agenda-skip-function '(org-agenda-skip-subtree-if
+                                            'regexp ":week:"))
+                (org-agenda-overriding-header "Projects waiting for something: ")))
               ("w" . "任务安排")
               ("x" agenda)
               ("wa" "重要且紧急的任务" tags-todo "+PRIORITY=\"A\"")
@@ -507,8 +508,8 @@ holding contextual information."
                                  extra-ids
                                  full-text))))
                   (concat 
-                          itemized-body
-                          ))
+                   itemized-body
+                   ))
               (let ((extra-class (org-element-property :HTML_CONTAINER_CLASS headline))
                     (first-content (car (org-element-contents headline))))
                 ;; Standard headline.  Export it as a section.
