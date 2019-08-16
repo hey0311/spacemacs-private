@@ -295,7 +295,7 @@
       ;; (add-to-list 'org-agenda-files "~/notes/hey/")
 
       ;; org-drill 添加范围
-      (setq org-drill-scope 'agenda)
+      ;; (setq org-drill-scope directory)
       ;; C-n for the next org agenda item
       (define-key org-agenda-mode-map (kbd "C-p") 'org-agenda-previous-item)
 

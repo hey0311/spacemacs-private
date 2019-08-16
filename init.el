@@ -34,7 +34,7 @@ This function should only modify configuration layer settings."
      (ivy :variables ivy-enable-advanced-buffer-information nil)
      better-defaults
      ranger
-     emoji
+     ;; emoji
      (plantuml :variables plantuml-jar-path "~/.spacemacs.d/plantuml.jar")
      ;; lsp 加载失败
      ;; dap 加载失败
