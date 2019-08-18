@@ -494,19 +494,23 @@ dump."
   )
 
 (defun dotspacemacs/user-init ()
+  (load-file "~/.spacemacs.d/fcitx.el")
+  (require 'fcitx)
+  (fcitx-evil-turn-on)
   ;; 设置输入法
-  (setq-default dotspacemacs-configuration-layers '((chinese :variables
-                                                             chinese-enable-fcitx t)))
-  (setq default-input-method "pyim")
-  (setq pyim-page-tooltip 'popup)
-  (setq pyim-punctuation-translate-p '(no yes auto)) ;使用半角标点。
-  (setq pyim-dicts
-        '((:name "dict1" :file
-                 "/Users/heyong/.spacemacs.d/pyim-bigdict.pyim"
-                 )))
-  (add-hook 'emacs-startup-hook
-            #'(lambda () (pyim-restart-1 t)))
-  (setq pyim-default-scheme 'pyim-shuangpin)
+  ;; (setq-default dotspacemacs-configuration-layers '((chinese :variables
+  ;;                                                            chinese-enable-fcitx t)))
+  ;; (setq default-input-method "pyim")
+  ;; (setq pyim-page-tooltip 'popup)
+  ;; (setq pyim-punctuation-translate-p '(no yes auto))
+                                        ;使用半角标点。
+  ;; (setq pyim-dicts
+  ;;       '((:name "dict1" :file
+  ;;                "/Users/heyong/.spacemacs.d/pyim-bigdict.pyim"
+  ;;                )))
+  ;; (add-hook 'emacs-startup-hook
+  ;;           #'(lambda () (pyim-restart-1 t)))
+  ;; (setq pyim-default-scheme 'pyim-shuangpin)
    ;; (setq-default configuration-layer-elpa-archives
    ;;               '(("melpa-cn" . "http://elpa.emacs-china.org/melpa/")
    ;;                 ("org-cn"   . "http://elpa.emacs-china.org/org/")
