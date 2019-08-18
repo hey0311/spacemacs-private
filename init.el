@@ -100,8 +100,8 @@ This function should only modify configuration layer settings."
      ;;        c-c++-backend 'lsp-ccls
      ;;        c-c++-lsp-executable (file-truename "/usr/local/bin/ccls"))
      zilongshanren
-     (chinese :variables
-              chinese-enable-fcitx t)
+     ;; (chinese :variables
+     ;;          chinese-enable-fcitx t)
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -497,6 +497,9 @@ dump."
   (load-file "~/.spacemacs.d/fcitx.el")
   (require 'fcitx)
   (fcitx-evil-turn-on)
+  (setq deft-strip-summary-regexp ".*")
+
+  ;; (fcitx-evil-turn-on)
   ;; 设置输入法
   ;; (setq-default dotspacemacs-configuration-layers '((chinese :variables
   ;;                                                            chinese-enable-fcitx t)))

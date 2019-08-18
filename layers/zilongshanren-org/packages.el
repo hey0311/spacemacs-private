@@ -388,13 +388,9 @@ See `org-capture-templates' for more information."
                                       :order 1)))))
                 (alltodo "" ((org-agenda-overriding-header "")
                              (org-super-agenda-groups
-                              '((:name "This Week's Tasks"
-                                       :tag ("week")
-                                       )
-                                (:name "This Month's Tasks"
-                                       :tag ("monthplan")
-                                       )
-                                (:discard (:anything t))))))))
+                              '((:name "in progress"
+                                       :tag "progress")
+                                ))))))
               ("W" "Weekly Review"
                ((stuck "") ;; review stuck projects as designated by org-stuck-projects
                 (tags-todo "PROJECT") ;; review all projects (assuming you use todo keywords to designate projects)
