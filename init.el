@@ -100,8 +100,8 @@ This function should only modify configuration layer settings."
      ;;        c-c++-backend 'lsp-ccls
      ;;        c-c++-lsp-executable (file-truename "/usr/local/bin/ccls"))
      zilongshanren
-     ;; (chinese :variables
-     ;;          chinese-enable-fcitx t)
+     (chinese :variables
+              chinese-enable-fcitx t)
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -494,11 +494,15 @@ dump."
   )
 
 (defun dotspacemacs/user-init ()
-  (load-file "~/.spacemacs.d/fcitx.el")
+  (let ((fcitx-path "D:/GreenSoft/"))
+    (setenv "PATH" (concat fcitx-path ";" (getenv "PATH")))
+    (add-to-list 'exec-path fcitx-path))
+  (load-file fcitx-path1)
   (require 'fcitx)
   (fcitx-evil-turn-on)
-  (setq deft-strip-summary-regexp ".*")
 
+  (setq deft-strip-summary-regexp ".*")
+  ;; 设置windows下的fcitx
   ;; (fcitx-evil-turn-on)
   ;; 设置输入法
   ;; (setq-default dotspacemacs-configuration-layers '((chinese :variables
@@ -514,14 +518,14 @@ dump."
   ;; (add-hook 'emacs-startup-hook
   ;;           #'(lambda () (pyim-restart-1 t)))
   ;; (setq pyim-default-scheme 'pyim-shuangpin)
-   ;; (setq-default configuration-layer-elpa-archives
-   ;;               '(("melpa-cn" . "http://elpa.emacs-china.org/melpa/")
-   ;;                 ("org-cn"   . "http://elpa.emacs-china.org/org/")
-   ;;                 ("gnu-cn"   . "http://elpa.emacs-china.org/gnu/")))
- (setq configuration-layer--elpa-archives  
-     '(("melpa-cn" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")  
-       ("org-cn"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/org/")  
-       ("gnu-cn"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")))
+  ;; (setq-default configuration-layer-elpa-archives
+  ;;               '(("melpa-cn" . "http://elpa.emacs-china.org/melpa/")
+  ;;                 ("org-cn"   . "http://elpa.emacs-china.org/org/")
+  ;;                 ("gnu-cn"   . "http://elpa.emacs-china.org/gnu/")))
+  (setq configuration-layer--elpa-archives  
+        '(("melpa-cn" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")  
+          ("org-cn"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/org/")  
+          ("gnu-cn"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")))
 
   
   (setq term-char-mode-point-at-process-mark nil)
