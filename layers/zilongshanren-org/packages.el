@@ -25,10 +25,13 @@
     ;; worf
     ;; org-download
     ;; plain-org-wiki
+    org-drill
     )
   )
 
 (defun zilongshanren-org/init-org-super-agenda ()
+  )
+(defun zilongshanren-org/init-org-drill()
   )
 (defun zilongshanren-org/post-init-org-pomodoro ()
   (zilongshanren/pomodoro-notification))
@@ -291,10 +294,11 @@
       (setq org-agenda-file-blogposts (expand-file-name "all-posts.org" org-agenda-dir))
       (setq org-agenda-file-project (expand-file-name "project/" org-agenda-dir))
       (setq org-agenda-files (list org-agenda-dir))
-      (add-to-list 'org-agenda-files (expand-file-name "project/" org-agenda-dir))
-      (add-to-list 'org-agenda-files (expand-file-name "hey/" org-agenda-dir))
+      (add-to-list 'org-agenda-files org-agenda-dir)
       ;; (add-to-list 'org-agenda-files "~/notes/hey/")
 
+      ;; org-drill 添加范围
+      ;; (setq org-drill-scope directory)
       ;; C-n for the next org agenda item
       (define-key org-agenda-mode-map (kbd "C-p") 'org-agenda-previous-item)
 
@@ -363,9 +367,9 @@ See `org-capture-templates' for more information."
             '(
               ("f" occur-tree "基本")
               ("c" todo "PROJECT"
-                ((org-agenda-skip-function '(org-agenda-skip-subtree-if
-                                             'regexp ":week:"))
-                 (org-agenda-overriding-header "Projects waiting for something: ")))
+               ((org-agenda-skip-function '(org-agenda-skip-subtree-if
+                                            'regexp ":week:"))
+                (org-agenda-overriding-header "Projects waiting for something: ")))
               ("w" . "任务安排")
               ("x" agenda)
               ("wa" "重要且紧急的任务" tags-todo "+PRIORITY=\"A\"")
@@ -387,13 +391,9 @@ See `org-capture-templates' for more information."
                                       :order 1)))))
                 (alltodo "" ((org-agenda-overriding-header "")
                              (org-super-agenda-groups
-                              '((:name "This Week's Tasks"
-                                       :tag ("week")
-                                       )
-                                (:name "This Month's Tasks"
-                                       :tag ("monthplan")
-                                       )
-                                (:discard (:anything t))))))))
+                              '((:name "in progress"
+                                       :tag "progress")
+                                ))))))
               ("W" "Weekly Review"
                ((stuck "") ;; review stuck projects as designated by org-stuck-projects
                 (tags-todo "PROJECT") ;; review all projects (assuming you use todo keywords to designate projects)
@@ -507,8 +507,8 @@ holding contextual information."
                                  extra-ids
                                  full-text))))
                   (concat 
-                          itemized-body
-                          ))
+                   itemized-body
+                   ))
               (let ((extra-class (org-element-property :HTML_CONTAINER_CLASS headline))
                     (first-content (car (org-element-contents headline))))
                 ;; Standard headline.  Export it as a section.
