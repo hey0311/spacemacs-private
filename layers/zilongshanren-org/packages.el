@@ -86,7 +86,10 @@
       (setq org-agenda-use-tag-inheritance nil) ;; 3-4x speedup
       (setq org-agenda-window-setup 'current-window)
       (setq org-log-done t)
+      ;; 设置导出ascii时不折行
       (setq org-ascii-text-width 9999)
+      ;; 设置org文件初始折叠状态为展开
+      (setq org-startup-folded nil)
       ;; 加密文章
       ;; "http://coldnew.github.io/blog/2013/07/13_5b094.html"
       ;; org-mode 設定
