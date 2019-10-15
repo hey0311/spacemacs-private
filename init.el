@@ -501,7 +501,6 @@ dump."
   (require 'fcitx)
   (fcitx-evil-turn-on)
 
-  (setq deft-strip-summary-regexp ".*")
   ;; 设置windows下的fcitx
   ;; (fcitx-evil-turn-on)
   ;; 设置输入法
@@ -565,6 +564,19 @@ dump."
   ;; (add-to-list 'org-export-filter-src-block-functions
   ;;              'my-dont-export-src-block)
 
+  ;; 设置deft的简介为空
+  ;; (setq deft-strip-summary-regexp ".*")
+  (require 'cnfonts)
+  ;; 让 cnfonts 随着 Emacs 自动生效。
+  (cnfonts-enable)
+  ;; 让 spacemacs mode-line 中的 Unicode 图标正确显示。
+  ;; (cnfonts-set-spacemacs-fallback-fonts)
+
+  (defun deft-filter-match-file (file &optional batch)
+    "Return FILE if it is a match against the current filter regexp.
+If BATCH is non-nil, treat `deft-filter-regexp' as a list and match
+all elements."
+    (message "searching....."))
   
   (eval-and-compile
     (if (fboundp 'window-inside-edges)

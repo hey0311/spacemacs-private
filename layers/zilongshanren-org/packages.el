@@ -92,7 +92,7 @@
       ;; 设置导出ascii时不折行
       (setq org-ascii-text-width 9999)
       ;; 设置org文件初始折叠状态为展开
-      (setq org-startup-folded nil)
+      ;; (setq org-startup-folded nil)
       ;; 加密文章
       ;; "http://coldnew.github.io/blog/2013/07/13_5b094.html"
       ;; org-mode 設定
@@ -288,7 +288,7 @@
       ;; define the refile targets
       (setq org-agenda-file-note (expand-file-name "notes.org" org-agenda-dir))
       (setq org-agenda-file-gtd (expand-file-name "gtd.org" org-agenda-dir))
-      (setq org-agenda-file-journal (expand-file-name "journal.org" org-agenda-dir))
+      (setq org-agenda-file-journal (expand-file-name "hey/Log.org" org-agenda-dir))
       (setq org-agenda-file-code-snippet (expand-file-name "snippet.org" org-agenda-dir))
       (setq org-default-notes-file (expand-file-name "gtd.org" org-agenda-dir))
       (setq org-agenda-file-blogposts (expand-file-name "all-posts.org" org-agenda-dir))
@@ -297,6 +297,18 @@
       (add-to-list 'org-agenda-files org-agenda-dir)
       ;; (add-to-list 'org-agenda-files "~/notes/hey/")
 
+      (defun journal-file-insert ()
+        "Insert's the journal heading based on the file's name."
+        (interactive)
+        (when (string-match "\\(20[0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)"
+                            (buffer-name))
+          (let (
+                (month (string-to-number (match-string 2 (buffer-name))))
+                (day   (string-to-number (match-string 3 (buffer-name))))
+                (datim nil))
+            (setq datim (encode-time 0 0 0 day month year))
+            (insert (format-time-string
+                     "#+TITLE: Journal Entry- %Y-%b-%d (%A)\n\n" datim)))))
       ;; org-drill 添加范围
       ;; (setq org-drill-scope directory)
       ;; C-n for the next org agenda item
@@ -388,12 +400,15 @@ See `org-capture-templates' for more information."
                                       :scheduled past)
                                (:name "Today"
                                       :scheduled today
-                                      :order 1)))))
+                                      :order 1)
+                               (:discard (:anything t))
+                               ))))
                 (alltodo "" ((org-agenda-overriding-header "")
                              (org-super-agenda-groups
                               '((:name "in progress"
                                        :tag "progress")
-                                ))))))
+                                ))))
+                ))
               ("W" "Weekly Review"
                ((stuck "") ;; review stuck projects as designated by org-stuck-projects
                 (tags-todo "PROJECT") ;; review all projects (assuming you use todo keywords to designate projects)
