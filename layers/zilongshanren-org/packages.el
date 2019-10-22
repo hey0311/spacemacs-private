@@ -297,18 +297,6 @@
       (add-to-list 'org-agenda-files org-agenda-dir)
       ;; (add-to-list 'org-agenda-files "~/notes/hey/")
 
-      (defun journal-file-insert ()
-        "Insert's the journal heading based on the file's name."
-        (interactive)
-        (when (string-match "\\(20[0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)"
-                            (buffer-name))
-          (let (
-                (month (string-to-number (match-string 2 (buffer-name))))
-                (day   (string-to-number (match-string 3 (buffer-name))))
-                (datim nil))
-            (setq datim (encode-time 0 0 0 day month year))
-            (insert (format-time-string
-                     "#+TITLE: Journal Entry- %Y-%b-%d (%A)\n\n" datim)))))
       ;; org-drill 添加范围
       ;; (setq org-drill-scope directory)
       ;; C-n for the next org agenda item
@@ -346,7 +334,7 @@
                :empty-lines 1)
               ("j" "Journal Entry"
                entry (file+datetree org-agenda-file-journal)
-               "* %?"
+               "* %?" :tree-type week
                :empty-lines 1)))
 
       (with-eval-after-load 'org-capture
