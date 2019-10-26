@@ -120,7 +120,7 @@ This function should only modify configuration layer settings."
                     evil-indent-plus volatile-highlights smartparens
                     spaceline holy-mode skewer-mode rainbow-delimiters
                     highlight-indentation vi-tilde-fringe eyebrowse ws-butler
-                    smooth-scrolling org-repo-todo org-download org-timer
+                    smooth-scrolling org-repo-todo org-timer
                     livid-mode git-gutter git-gutter-fringe  evil-escape
                     leuven-theme gh-md evil-lisp-state spray lorem-ipsum symon
                     ac-ispell ace-jump-mode auto-complete auto-dictionary
@@ -517,10 +517,7 @@ dump."
    (add-hook 'emacs-startup-hook
              #'(lambda () (pyim-restart-1 t)))
    (setq pyim-default-scheme 'pyim-shuangpin)
-  ;; (setq-default configuration-layer-elpa-archives
-  ;;               '(("melpa-cn" . "http://elpa.emacs-china.org/melpa/")
-  ;;                 ("org-cn"   . "http://elpa.emacs-china.org/org/")
-  ;;                 ("gnu-cn"   . "http://elpa.emacs-china.org/gnu/")))
+
   (setq configuration-layer--elpa-archives  
         '(("melpa-cn" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")  
           ("org-cn"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/org/")  
@@ -550,25 +547,6 @@ dump."
   (load-file real-auto-save-path)
   (require 'real-auto-save)
   (add-hook 'org-mode-hook 'real-auto-save-mode)
-  ;; (defun define-anki()
-  ;;   "Insert “Yay!” at cursor position."
-  ;;   (interactive)
-  ;;   (insert "
-  ;;    :PROPERTIES:
-  ;;      :ANKI_NOTE_TYPE: Basic
-  ;;      :ANKI_DECK: Default
-  ;;    :END:
-  ;;   "))
-  ;; 不导出代码块-实现1：基于ascii扩展一种新的导出方法，但不知道怎么添加到mini-buffer，放弃
-  ;; (defun my-ascii-src-block (src-block contents info))
-  ;; (org-export-define-derived-backend 'my-ascii 'ascii
-  ;;   :translate-alist '((src-block . my-ascii-src-block)))
-
-  ;; 不导出代码块-实现 2，用filter，这里不知道怎么执行空函数，只好用message “”
-  ;; (defun my-dont-export-src-block (text backend info)
-  ;;   (message ""))
-  ;; (add-to-list 'org-export-filter-src-block-functions
-  ;;              'my-dont-export-src-block)
 
   ;; 设置deft的简介为空
   ;; (setq deft-strip-summary-regexp ".*")
@@ -578,12 +556,7 @@ dump."
   ;; 让 spacemacs mode-line 中的 Unicode 图标正确显示。
   ;; (cnfonts-set-spacemacs-fallback-fonts)
 
-  (defun deft-filter-match-file (file &optional batch)
-    "Return FILE if it is a match against the current filter regexp.
-If BATCH is non-nil, treat `deft-filter-regexp' as a list and match
-all elements."
-    (message "searching....."))
-  
+  ;; 下面是自带的配置，不要动了
   (eval-and-compile
     (if (fboundp 'window-inside-edges)
         ;; Emacs devel.
