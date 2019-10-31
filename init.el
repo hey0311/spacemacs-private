@@ -517,10 +517,7 @@ dump."
    ;; (add-hook 'emacs-startup-hook
    ;;           #'(lambda () (pyim-restart-1 t)))
    ;; (setq pyim-default-scheme 'pyim-shuangpin)
-  ;; (setq-default configuration-layer-elpa-archives
-  ;;               '(("melpa-cn" . "http://elpa.emacs-china.org/melpa/")
-  ;;                 ("org-cn"   . "http://elpa.emacs-china.org/org/")
-  ;;                 ("gnu-cn"   . "http://elpa.emacs-china.org/gnu/")))
+
   (setq configuration-layer--elpa-archives  
         '(("melpa-cn" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")  
           ("org-cn"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/org/")  
