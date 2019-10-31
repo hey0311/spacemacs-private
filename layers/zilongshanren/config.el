@@ -14,7 +14,6 @@
      config-dir "d:/notes"
      fcitx-path1 "C:/Users/heyong/AppData/Roaming/.spacemacs.d/fcitx.el"
      org-download-file "C:/Users/oppo/AppData/Roaming/.spacemacs.d/my_plugins/org-download.el"
-     real-auto-save-path "c:/Users/oppo/AppData/Roaming/.spacemacs.d/real-auto-save.el"
      ciku-file "/Users/heyong/.spacemacs.d/pyim-bigdict.pyim"
      blog-admin-dir "f:/zilongshanren.com")
   (setq
@@ -22,7 +21,6 @@
    deft-dir "~/notes"
    config-dir "~/.spacemacs.d"
    fcitx-path1 "~/.spacemacs.d/fcitx.el"
-   real-auto-save-path "c:/Users/oppo/AppData/Roaming/.spacemacs.d/real-auto-save.el"
    ciku-file "/Users/heyong/.spacemacs.d/pyim-bigdict.pyim"
    blog-admin-dir "~/zilongshanren.com"))
 

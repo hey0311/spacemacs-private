@@ -110,7 +110,7 @@ This function should only modify configuration layer settings."
    ;; To use a local version of a package, use the `:location' property:
    ;; '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
-   dotspacemacs-additional-packages '(sicp ssh-agency cnfonts)
+   dotspacemacs-additional-packages '(sicp ssh-agency cnfonts real-auto-save)
 
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -544,21 +544,16 @@ dump."
   ;; =========================================以下是我的配置
   ;; 1.使用<s创建代码块
   (require 'org-tempo)
-  ;; 2.自动保存
-  (load-file real-auto-save-path)
-  (require 'real-auto-save)
+  ;; 2.org文件自动保存,每2分钟自动保存,避免卡顿
   (add-hook 'org-mode-hook 'real-auto-save-mode)
-  ;; 每2分钟自动保存,避免卡顿
   (setq real-auto-save-interval 120) 
 
   ;; 3.设置deft的简介为空
   (setq deft-strip-summary-regexp ".*")
-  ;; 4.设置字体等宽
-  ;; 让 cnfonts 随着 Emacs 自动生效。
-  ;; (require 'cnfonts)
+  ;; 4.设置字体等宽cnfont 让 cnfonts 随着 Emacs 自动生效。
   (cnfonts-enable)
   ;; 让 spacemacs mode-line 中的 Unicode 图标正确显示。
-  ;; (cnfonts-set-spacemacs-fallback-fonts)
+  (cnfonts-set-spacemacs-fallback-fonts)
 
   ;; ====================================以下是spacemacs默认配置
   (eval-and-compile
