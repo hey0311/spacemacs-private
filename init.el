@@ -91,7 +91,7 @@ This function should only modify configuration layer settings."
      (typescript :variables
                  typescript-fmt-on-save nil
                  typescript-fmt-tool 'typescript-formatter
-                typescript-backend 'lsp)
+                 typescript-backend 'lsp)
      emacs-lisp
      (clojure :variables clojure-enable-fancify-symbols t)
      racket
@@ -100,8 +100,8 @@ This function should only modify configuration layer settings."
      ;;        c-c++-backend 'lsp-ccls
      ;;        c-c++-lsp-executable (file-truename "/usr/local/bin/ccls"))
      zilongshanren
-     (chinese :variables
-              chinese-enable-fcitx t)
+     ;; (chinese :variables
+     ;;          chinese-enable-fcitx t)
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -120,7 +120,7 @@ This function should only modify configuration layer settings."
                     evil-indent-plus volatile-highlights smartparens
                     spaceline holy-mode skewer-mode rainbow-delimiters
                     highlight-indentation vi-tilde-fringe eyebrowse ws-butler
-                    smooth-scrolling org-repo-todo org-download org-timer
+                    smooth-scrolling org-repo-todo org-timer
                     livid-mode git-gutter git-gutter-fringe  evil-escape
                     leuven-theme gh-md evil-lisp-state spray lorem-ipsum symon
                     ac-ispell ace-jump-mode auto-complete auto-dictionary
@@ -503,20 +503,20 @@ dump."
 
   ;; 设置windows下的fcitx
   ;; (fcitx-evil-turn-on)
-  ;; 设置输入法
-  (setq-default dotspacemacs-configuration-layers '((chinese :variables
-                                                             chinese-enable-fcitx t)))
-   (setq default-input-method "pyim")
-   (setq pyim-page-tooltip 'popup)
-   (setq pyim-punctuation-translate-p '(no yes auto))
+  ;; 设置输入法,最后还是决定把中文拼音给禁了吧,在win下会很卡,还不如用搜狗
+  ;; (setq-default dotspacemacs-configuration-layers '((chinese :variables
+  ;;                                                            chinese-enable-fcitx t)))
+   ;; (setq default-input-method "pyim")
+   ;; (setq pyim-page-tooltip 'popup)
+   ;; (setq pyim-punctuation-translate-p '(no yes auto))
                                         ;使用半角标点。
-   (setq pyim-dicts
-         '((:name "dict1" :file
-                  "C:/Users/oppo/AppData/Roaming/.spacemacs.d/pyim-bigdict.pyim"
-                  )))
-   (add-hook 'emacs-startup-hook
-             #'(lambda () (pyim-restart-1 t)))
-   (setq pyim-default-scheme 'pyim-shuangpin)
+   ;; (setq pyim-dicts
+   ;;       '((:name "dict1" :file
+   ;;                "C:/Users/oppo/AppData/Roaming/.spacemacs.d/pyim-bigdict.pyim"
+   ;;                )))
+   ;; (add-hook 'emacs-startup-hook
+   ;;           #'(lambda () (pyim-restart-1 t)))
+   ;; (setq pyim-default-scheme 'pyim-shuangpin)
   ;; (setq-default configuration-layer-elpa-archives
   ;;               '(("melpa-cn" . "http://elpa.emacs-china.org/melpa/")
   ;;                 ("org-cn"   . "http://elpa.emacs-china.org/org/")
@@ -544,46 +544,26 @@ dump."
   )
 
 (defun dotspacemacs/user-config ()
-  ;; 使用<s创建代码块
+  ;; =========================================以下是我的配置
+  ;; 1.使用<s创建代码块
   (require 'org-tempo)
-  ;; 加载自动保存
+  ;; 2.自动保存
   (load-file real-auto-save-path)
   (require 'real-auto-save)
   (add-hook 'org-mode-hook 'real-auto-save-mode)
-  ;; (defun define-anki()
-  ;;   "Insert “Yay!” at cursor position."
-  ;;   (interactive)
-  ;;   (insert "
-  ;;    :PROPERTIES:
-  ;;      :ANKI_NOTE_TYPE: Basic
-  ;;      :ANKI_DECK: Default
-  ;;    :END:
-  ;;   "))
-  ;; 不导出代码块-实现1：基于ascii扩展一种新的导出方法，但不知道怎么添加到mini-buffer，放弃
-  ;; (defun my-ascii-src-block (src-block contents info))
-  ;; (org-export-define-derived-backend 'my-ascii 'ascii
-  ;;   :translate-alist '((src-block . my-ascii-src-block)))
+  ;; 每2分钟自动保存,避免卡顿
+  (setq real-auto-save-interval 120) 
 
-  ;; 不导出代码块-实现 2，用filter，这里不知道怎么执行空函数，只好用message “”
-  ;; (defun my-dont-export-src-block (text backend info)
-  ;;   (message ""))
-  ;; (add-to-list 'org-export-filter-src-block-functions
-  ;;              'my-dont-export-src-block)
-
-  ;; 设置deft的简介为空
-  ;; (setq deft-strip-summary-regexp ".*")
+  ;; 3.设置deft的简介为空
+  (setq deft-strip-summary-regexp ".*")
+  ;; 4.设置字体等宽
   (require 'cnfonts)
   ;; 让 cnfonts 随着 Emacs 自动生效。
   (cnfonts-enable)
   ;; 让 spacemacs mode-line 中的 Unicode 图标正确显示。
   ;; (cnfonts-set-spacemacs-fallback-fonts)
 
-  (defun deft-filter-match-file (file &optional batch)
-    "Return FILE if it is a match against the current filter regexp.
-If BATCH is non-nil, treat `deft-filter-regexp' as a list and match
-all elements."
-    (message "searching....."))
-  
+  ;; ====================================以下是spacemacs默认配置
   (eval-and-compile
     (if (fboundp 'window-inside-edges)
         ;; Emacs devel.
