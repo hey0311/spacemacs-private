@@ -110,7 +110,7 @@ This function should only modify configuration layer settings."
    ;; To use a local version of a package, use the `:location' property:
    ;; '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
-   dotspacemacs-additional-packages '(sicp ssh-agency anki-editor)
+   dotspacemacs-additional-packages '(sicp ssh-agency cnfonts)
 
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -554,8 +554,8 @@ dump."
   ;; 3.设置deft的简介为空
   (setq deft-strip-summary-regexp ".*")
   ;; 4.设置字体等宽
-  (require 'cnfonts)
   ;; 让 cnfonts 随着 Emacs 自动生效。
+  ;; (require 'cnfonts)
   (cnfonts-enable)
   ;; 让 spacemacs mode-line 中的 Unicode 图标正确显示。
   ;; (cnfonts-set-spacemacs-fallback-fonts)
@@ -743,7 +743,7 @@ Return a cons cell (X . Y)"
                           'gbk))
   ;; (add-hook 'text-mode-hook 'spacemacs/toggle-spelling-checking-on)
 
-  (add-hook 'org-mode-hook 'emojify-mode)
+  ;; (add-hook 'org-mode-hook 'emojify-mode)
   (add-hook 'org-mode-hook 'auto-fill-mode)
 
   ;; https://emacs-china.org/t/ox-hugo-auto-fill-mode-markdown/9547/4
