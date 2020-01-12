@@ -289,6 +289,7 @@
       (setq org-agenda-file-note (expand-file-name "notes.org" org-agenda-dir))
       (setq org-agenda-file-gtd (expand-file-name "gtd.org" org-agenda-dir))
       (setq org-agenda-file-journal (expand-file-name "hey/Log.org" org-agenda-dir))
+      (setq org-agenda-file-study (expand-file-name "study.org" org-agenda-dir))
       (setq org-agenda-file-code-snippet (expand-file-name "snippet.org" org-agenda-dir))
       (setq org-default-notes-file (expand-file-name "gtd.org" org-agenda-dir))
       (setq org-agenda-file-blogposts (expand-file-name "all-posts.org" org-agenda-dir))
@@ -331,6 +332,10 @@
                :empty-lines 1)
               ("l" "links" entry (file+headline org-agenda-file-note "Quick notes")
                "* TODO [#C] %?\n  %i\n %a \n %U"
+               :empty-lines 1)
+              ("f" "Study Entry"
+               entry (file+datetree org-agenda-file-study)
+               "* %?" :tree-type week
                :empty-lines 1)
               ("j" "Journal Entry"
                entry (file+datetree org-agenda-file-journal)
