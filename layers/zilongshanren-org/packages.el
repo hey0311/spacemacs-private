@@ -290,6 +290,7 @@
       (setq org-agenda-file-gtd (expand-file-name "gtd.org" org-agenda-dir))
       (setq org-agenda-file-journal (expand-file-name "hey/Log.org" org-agenda-dir))
       (setq org-agenda-file-study (expand-file-name "study.org" org-agenda-dir))
+      (setq org-agenda-file-trade (expand-file-name "trade.org" org-agenda-dir))
       (setq org-agenda-file-code-snippet (expand-file-name "snippet.org" org-agenda-dir))
       (setq org-default-notes-file (expand-file-name "gtd.org" org-agenda-dir))
       (setq org-agenda-file-blogposts (expand-file-name "all-posts.org" org-agenda-dir))
@@ -335,6 +336,10 @@
                :empty-lines 1)
               ("f" "Study Entry"
                entry (file+datetree org-agenda-file-study)
+               "* %?" :tree-type week
+               :empty-lines 1)
+              ("m" "Trade Entry"
+               entry (file+datetree org-agenda-file-trade)
                "* %?" :tree-type week
                :empty-lines 1)
               ("j" "Journal Entry"
