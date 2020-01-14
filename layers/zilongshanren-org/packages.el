@@ -112,6 +112,20 @@
       ;; 可以設定任何 ID 或是設成 nil 來使用對稱式加密 (symmetric encryption)
       (setq org-crypt-key nil)
 
+      ;; 设置org-jounary的目录
+      (setq org-journal-dir (expand-file-name "journal/" org-agenda-dir))
+      ;; 设置org-journal的一天结束时间
+      (setq org-extend-today-until 4)
+      (setq org-journal-enable-agenda-integration t)
+      (defun org-journal-find-location ()
+        ;; Open today's journal, but specify a non-nil prefix argument in order to
+        ;; inhibit inserting the heading; org-capture will insert the heading.
+        (org-journal-new-entry t)
+        ;; Position point on the journal's top-level heading so that org-capture
+        ;; will add the new entry as a child entry.
+        (goto-char (point-min)))
+
+      (setq org-capture-templates '())
       ;; (add-to-list 'auto-mode-alist '("\.org\\'" . org-mode))
 
       ;; (setq org-todo-keywords (quote ( (sequence "SOMEDAY(s)" "TODO(t!)" "|" "DONE(d!)" "CANCELLED(c)" ))))
@@ -342,10 +356,13 @@
                entry (file+datetree org-agenda-file-trade)
                "* %?" :tree-type week
                :empty-lines 1)
-              ("j" "Journal Entry"
-               entry (file+datetree org-agenda-file-journal)
-               "* %?" :tree-type week
-               :empty-lines 1)))
+              ("j" "Journal entry" entry (function org-journal-find-location)
+               "* %(format-time-string org-journal-time-format)%^{Title}\n%i%?")
+              ;; ("j" "Journal Entry"
+              ;;  entry (file+datetree org-agenda-file-journal)
+              ;;  "* %?" :tree-type week
+              ;;  :empty-lines 1)
+              ))
 
       (with-eval-after-load 'org-capture
         (defun org-hugo-new-subtree-post-capture-template ()
