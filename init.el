@@ -100,8 +100,8 @@ This function should only modify configuration layer settings."
      ;;        c-c++-backend 'lsp-ccls
      ;;        c-c++-lsp-executable (file-truename "/usr/local/bin/ccls"))
      zilongshanren
-     ;; (chinese :variables
-     ;;          chinese-enable-fcitx t)
+      (chinese :variables
+               chinese-enable-fcitx t)
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -110,7 +110,7 @@ This function should only modify configuration layer settings."
    ;; To use a local version of a package, use the `:location' property:
    ;; '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
-   dotspacemacs-additional-packages '(sicp ssh-agency cnfonts real-auto-save imenu-list org-journal)
+   dotspacemacs-additional-packages '(sicp ssh-agency cnfonts real-auto-save imenu-list org-journal org-super-agenda)
 
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -504,19 +504,19 @@ dump."
   ;; 设置windows下的fcitx
   ;; (fcitx-evil-turn-on)
   ;; 设置输入法,最后还是决定把中文拼音给禁了吧,在win下会很卡,还不如用搜狗
-  ;; (setq-default dotspacemacs-configuration-layers '((chinese :variables
-  ;;                                                            chinese-enable-fcitx t)))
-   ;; (setq default-input-method "pyim")
-   ;; (setq pyim-page-tooltip 'popup)
-   ;; (setq pyim-punctuation-translate-p '(no yes auto))
+   (setq-default dotspacemacs-configuration-layers '((chinese :variables
+                                                              chinese-enable-fcitx t)))
+    (setq default-input-method "pyim")
+    (setq pyim-page-tooltip 'popup)
+    (setq pyim-punctuation-translate-p '(no yes auto))
                                         ;使用半角标点。
-   ;; (setq pyim-dicts
-   ;;       '((:name "dict1" :file
-   ;;                "C:/Users/oppo/AppData/Roaming/.spacemacs.d/pyim-bigdict.pyim"
-   ;;                )))
-   ;; (add-hook 'emacs-startup-hook
-   ;;           #'(lambda () (pyim-restart-1 t)))
-   ;; (setq pyim-default-scheme 'pyim-shuangpin)
+    (setq pyim-dicts
+          '((:name "dict1" :file
+                   "~/.spacemacs.d/pyim-bigdict.pyim"
+                   )))
+    (add-hook 'emacs-startup-hook
+              #'(lambda () (pyim-restart-1 t)))
+    (setq pyim-default-scheme 'pyim-shuangpin)
 
   (setq configuration-layer--elpa-archives  
         '(("melpa-cn" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")  
@@ -554,6 +554,17 @@ dump."
   (cnfonts-enable)
   ;; 让 spacemacs mode-line 中的 Unicode 图标正确显示。
   (cnfonts-set-spacemacs-fallback-fonts)
+
+  (defun org-journal-file-header-func ()
+    "Custom function to create journal header."
+    (concat
+     (pcase org-journal-file-type
+       (`daily "#+TITLE: Daily Journal\n#+STARTUP: showeverything")
+       (`weekly "#+TITLE: Weekly Journal\n#+STARTUP: folded")
+       (`monthly "#+TITLE: Monthly Journal\n#+STARTUP: folded")
+       (`yearly "#+TITLE: Yearly Journal\n#+STARTUP: folded"))))
+
+  (setq org-journal-file-header 'org-journal-file-header-func)
 
   ;; ====================================以下是spacemacs默认配置
   (eval-and-compile
@@ -633,7 +644,7 @@ Return a cons cell (X . Y)"
   (setq split-width-threshold 120)
   ;; (linum-relative-on)
 
-  (spacemacs|add-company-backends :modes text-mode)
+  ;; (spacemacs|add-company-backends :modes text-mode)
 
   (add-hook 'doc-view-mode-hook 'auto-revert-mode)
 
