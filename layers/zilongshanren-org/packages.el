@@ -309,9 +309,10 @@
       (setq org-default-notes-file (expand-file-name "gtd.org" org-agenda-dir))
       (setq org-agenda-file-blogposts (expand-file-name "all-posts.org" org-agenda-dir))
       (setq org-agenda-file-project (expand-file-name "project/" org-agenda-dir))
+      (setq org-agenda-file-project (expand-file-name "journal/" org-agenda-dir))
       (setq org-agenda-files (list org-agenda-dir))
       (add-to-list 'org-agenda-files org-agenda-dir)
-      ;; (add-to-list 'org-agenda-files "~/notes/hey/")
+      (add-to-list 'org-agenda-files "d:/notes/journal/")
 
       ;; org-drill 添加范围
       ;; (setq org-drill-scope directory)
