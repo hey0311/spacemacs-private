@@ -313,6 +313,11 @@
       (setq org-agenda-files (list org-agenda-dir))
       (add-to-list 'org-agenda-files org-agenda-dir)
       (add-to-list 'org-agenda-files "d:/notes/journal/")
+      (add-to-list 'org-agenda-files "~/notes/trade/")
+      (add-to-list 'org-agenda-files "~/notes/hey/")
+      (add-to-list 'org-agenda-files "~/notes/front/")
+      (add-to-list 'org-agenda-files "~/notes/journal/")
+      (add-to-list 'org-agenda-files "~/notes/productivity/")
 
       ;; org-drill 添加范围
       ;; (setq org-drill-scope directory)
@@ -398,11 +403,7 @@ See `org-capture-templates' for more information."
                ((org-agenda-skip-function '(org-agenda-skip-subtree-if
                                             'regexp ":week:"))
                 (org-agenda-overriding-header "Projects waiting for something: ")))
-              ("w" . "任务安排")
               ("x" agenda)
-              ("wa" "重要且紧急的任务" tags-todo "+PRIORITY=\"A\"")
-              ("wb" "重要且不紧急的任务" tags-todo "-Weekly-Monthly-Daily+PRIORITY=\"B\"")
-              ("wc" "不重要且紧急的任务" tags-todo "+PRIORITY=\"C\"")
               ("b" "Blog" tags-todo "BLOG")
               ("p" . "项目安排")
               ("pw" tags-todo "PROJECT+WORK+CATEGORY=\"work\"")
@@ -423,6 +424,40 @@ See `org-capture-templates' for more information."
                              (org-super-agenda-groups
                               '((:name "in progress"
                                        :tag "progress")
+                                ))))
+                ))
+              ("w" "Weekly Overview1" 
+               (
+                (alltodo "" ((org-agenda-overriding-header "")
+                             (org-super-agenda-groups
+                              '((:name "week plan"
+                                       :tag "weekplan")
+                                (:discard (:anything t))
+                                ))))
+                (agenda "" ((org-agenda-span 'day)
+                            ;; (org-agenda-compact-blocks t)
+                            ;; (org-agenda-prefix-format '((agenda . "  %?-12t")))
+                            (org-super-agenda-groups
+                             '((:name "Sport"
+                                      :and (:scheduled (after "2020-03-16") :tag "sport")
+                                      )
+                               (:name "Study"
+                                      :and (:scheduled (after "2020-03-16") :tag "study")
+                                      )
+                               (:name "trade"
+                                      :and (:scheduled (after "2020-03-16") :tag "trade")
+                                      )
+                               (:name "work"
+                                      :and (:scheduled (after "2020-03-16") :tag "work")
+                                      )
+                               (:discard (:anything t))
+                               ))))
+                (alltodo "" ((org-agenda-overriding-header "")
+                             (org-super-agenda-groups
+                              '((:name "inbox"
+                                       :and (:todo t :not (:tag "weekplan") ) 
+                                       )
+                                (:discard (:anything t))
                                 ))))
                 ))
               ("W" "Weekly Review"
