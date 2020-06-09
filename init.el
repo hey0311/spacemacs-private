@@ -99,9 +99,9 @@ This function should only modify configuration layer settings."
      ;;        c-c++-default-mode-for-headers 'c++-mode
      ;;        c-c++-backend 'lsp-ccls
      ;;        c-c++-lsp-executable (file-truename "/usr/local/bin/ccls"))
-     ;; zilongshanren
-      ;; (chinese :variables
-      ;;          chinese-enable-fcitx t)
+      zilongshanren
+       (chinese :variables
+                chinese-enable-fcitx t)
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -555,6 +555,9 @@ dump."
   ;; 让 spacemacs mode-line 中的 Unicode 图标正确显示。
   (cnfonts-set-spacemacs-fallback-fonts)
   (setq org-roam-directory "d:/notes/front/")
+
+  ;; 失去焦点时自动美化
+  (add-hook 'focus-out-hook 'indent-region-or-buffer)
   ;; ====================================以下是spacemacs默认配置
   (eval-and-compile
     (if (fboundp 'window-inside-edges)
