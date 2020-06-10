@@ -114,6 +114,9 @@
 
       ;; 设置org-jounary的目录
       (setq org-journal-dir (expand-file-name "journal/" org-agenda-dir))
+      ;; 恼人的换行问题
+      (setq global-visual-line-mode t)
+      ;; (setq auto-fill-mode nil)
       ;; 设置org-journal的一天结束时间
       (setq org-extend-today-until 4)
       (setq org-journal-enable-agenda-integration t)
@@ -248,14 +251,14 @@
                 (org-check-agenda-file file)
                 (setq rtn (org-agenda-get-day-entries file date :todo))
                 (setq rtnall (append rtnall rtn))))
-        
+            
             (when rtnall
               (setq lucky-entry
                     (nth (random
                           (safe-length
                            (setq entries rtnall)))
                          entries))
-          
+              
               (setq marker (or (get-text-property 0 'org-marker lucky-entry)
                                (org-agenda-error)))
               (setq buffer (marker-buffer marker))
