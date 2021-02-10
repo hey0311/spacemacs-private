@@ -99,9 +99,9 @@ This function should only modify configuration layer settings."
      ;;        c-c++-default-mode-for-headers 'c++-mode
      ;;        c-c++-backend 'lsp-ccls
      ;;        c-c++-lsp-executable (file-truename "/usr/local/bin/ccls"))
-      zilongshanren
-       (chinese :variables
-                chinese-enable-fcitx t)
+     zilongshanren
+     (chinese :variables
+              chinese-enable-fcitx t)
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -504,24 +504,27 @@ dump."
   ;; 设置windows下的fcitx
   ;; (fcitx-evil-turn-on)
   ;; 设置输入法,最后还是决定把中文拼音给禁了吧,在win下会很卡,还不如用搜狗
-   ;; (setq-default dotspacemacs-configuration-layers '((chinese :variables
-   ;;                                                            chinese-enable-fcitx t)))
-    ;; (setq default-input-method "pyim")
-    ;; (setq pyim-page-tooltip 'popup)
-    ;; (setq pyim-punctuation-translate-p '(no yes auto))
+  ;; (setq-default dotspacemacs-configuration-layers '((chinese :variables
+  ;;                                                            chinese-enable-fcitx t)))
+  ;; (setq default-input-method "pyim")
+  ;; (setq pyim-page-tooltip 'popup)
+  ;; (setq pyim-punctuation-translate-p '(no yes auto))
                                         ;使用半角标点。
-    ;; (setq pyim-dicts
-    ;;       '((:name "dict1" :file
-    ;;                "~/.spacemacs.d/pyim-bigdict.pyim"
-    ;;                )))
-    ;; (add-hook 'emacs-startup-hook
-    ;;           #'(lambda () (pyim-restart-1 t)))
-    ;; (setq pyim-default-scheme 'pyim-shuangpin)
+  ;; (setq pyim-dicts
+  ;;       '((:name "dict1" :file
+  ;;                "~/.spacemacs.d/pyim-bigdict.pyim"
+  ;;                )))
+  ;; (add-hook 'emacs-startup-hook
+  ;;           #'(lambda () (pyim-restart-1 t)))
+  ;; (setq pyim-default-scheme 'pyim-shuangpin)
 
-  (setq configuration-layer--elpa-archives  
-        '(("melpa-cn" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")  
-          ("org-cn"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/org/")  
-          ("gnu-cn"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")))
+  ;; (setq configuration-layer--elpa-archives  
+  ;;       '(("melpa-cn" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")  
+  ;;         ("org-cn"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/org/")  
+  ;;         ("gnu-cn"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")))
+
+  (add-to-list 'package-archives
+               '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 
   
   (setq term-char-mode-point-at-process-mark nil)
@@ -554,215 +557,262 @@ dump."
   (cnfonts-enable)
   ;; 让 spacemacs mode-line 中的 Unicode 图标正确显示。
   (cnfonts-set-spacemacs-fallback-fonts)
-  (setq org-roam-directory "d:/notes/front/")
-
+  (require 'org-protocol)
+  (require 'org-roam-protocol)
+  (setq org-roam-index-file "D:/notes/roam/index.org")
+  (setq org-roam-directory "d:/notes/roam/")
+  (add-to-list 'org-roam-capture-templates
+               '("j" "note" plain (function org-roam-capture--get-point)
+                 "%?"
+                 :file-name "%<%Y%m%d%H%M%S>-${slug}"
+                 :head "#+title: ${title}\n#+source: \n#+roam_tags: \n#+roam_alias: \nlinks: "
+                 :unnarrowed t
+                 ))
+  (setq org-roam-capture-ref-templates
+        '(("r" "ref" plain (function org-roam-capture--get-point)
+           ""
+           :file-name "${slug}"
+           :head "#+title: ${title}\n#+roam_key: ${ref}\n"
+           :unnarrowed t)))
   ;; 失去焦点时自动美化
+  ;; 自动格式化代码块
+  (defun indent-org-block-automatically ()
+    (when (org-in-src-block-p)
+      (org-edit-special)
+      (indent-region (point-min) (point-max))
+      (org-edit-src-exit)))
   (add-hook 'focus-out-hook 'indent-region-or-buffer)
-  ;; ====================================以下是spacemacs默认配置
-  (eval-and-compile
-    (if (fboundp 'window-inside-edges)
-        ;; Emacs devel.
+  (add-hook 'focus-out-hook 'indent-org-block-automatically)
+  (use-package org-roam-server
+    :ensure t
+    :config
+    (setq org-roam-server-host "127.0.0.1"
+          org-roam-server-port 8080
+          org-roam-server-authenticate nil
+          org-roam-server-export-inline-images t
+          org-roam-server-serve-files nil
+          org-roam-server-served-file-extensions '("pdf" "mp4" "ogv")
+          org-roam-server-network-poll t
+          org-roam-server-network-arrows nil
+          org-roam-server-network-label-truncate t
+          org-roam-server-network-label-truncate-length 60
+          org-roam-server-network-label-wrap-length 20))
+  ;; (run-at-time 1 10 'indent-org-block-automatically)
+  ;; js文件用vscode打开
+  (eval-after-load "org"
+     '(progn
+        ;; .txt files aren't in the list initially, but in case that changes
+        ;; in a future version of org, use if to avoid errors
+        (if (assoc "\\.js\\'" org-file-apps)
+            (setcdr (assoc "\\.js\\'" org-file-apps) "code.exe %s")
+          (add-to-list 'org-file-apps '("\\.js\\'" . "code %s") t))
+        ;; Change .pdf association directly within the alist
+        (setcdr (assoc "\\.pdf\\'" org-file-apps) "evince %s")))
+    ;; ====================================以下是spacemacs默认配置
+    (eval-and-compile
+      (if (fboundp 'window-inside-edges)
+          ;; Emacs devel.
+          (defalias 'th-window-edges
+            'window-inside-edges)
+        ;; Emacs 21
         (defalias 'th-window-edges
-          'window-inside-edges)
-      ;; Emacs 21
-      (defalias 'th-window-edges
-        'window-edges)
-      ))
+          'window-edges)
+        ))
   
-  (defun th-point-position ()
-    "Return the location of POINT as positioned on the selected frame.
+    (defun th-point-position ()
+      "Return the location of POINT as positioned on the selected frame.
 Return a cons cell (X . Y)"
-    (let* ((w (selected-window))
-           (f (selected-frame))
-           (edges (th-window-edges w))
-           (col (current-column))
-           (row (count-lines (window-start w) (point)))
-           (x (+ (car edges) col))
-           (y (+ (car (cdr edges)) row)))
-      (cons x y)))
+      (let* ((w (selected-window))
+             (f (selected-frame))
+             (edges (th-window-edges w))
+             (col (current-column))
+             (row (count-lines (window-start w) (point)))
+             (x (+ (car edges) col))
+             (y (+ (car (cdr edges)) row)))
+        (cons x y)))
 
 
-  (defun get-point-pixel-position ()
-    "Return the position of point in pixels within the frame."
-    (let ((point-pos (th-point-position)))
-      (th-get-pixel-position (car point-pos) (cdr point-pos))))
- 
+    (defun get-point-pixel-position ()
+      "Return the position of point in pixels within the frame."
+      (let ((point-pos (th-point-position)))
+        (th-get-pixel-position (car point-pos) (cdr point-pos))))
+  
 
-  (defun th-get-pixel-position (x y)
-    "Return the pixel position of location X Y (1-based) within the frame."
-    (let ((old-mouse-pos (mouse-position)))
-      (set-mouse-position (selected-frame)
-                          ;; the fringe is the 0th column, so x is OK
-                          x
-                          (1- y))
-      (let ((point-x (car (cdr (mouse-pixel-position))))
-            (point-y (cdr (cdr (mouse-pixel-position)))))
-        ;; on Linux with the Enlightenment window manager restoring the
-        ;; mouse coordinates didn't work well, so for the time being it
-        ;; is enabled for Windows only
-        (when (eq window-system 'w32)        
-          (set-mouse-position 
-           (selected-frame)
-           (cadr old-mouse-pos)
-           (cddr old-mouse-pos)))
-        (cons point-x point-y))))
+    (defun th-get-pixel-position (x y)
+      "Return the pixel position of location X Y (1-based) within the frame."
+      (let ((old-mouse-pos (mouse-position)))
+        (set-mouse-position (selected-frame)
+                            ;; the fringe is the 0th column, so x is OK
+                            x
+                            (1- y))
+        (let ((point-x (car (cdr (mouse-pixel-position))))
+              (point-y (cdr (cdr (mouse-pixel-position)))))
+          ;; on Linux with the Enlightenment window manager restoring the
+          ;; mouse coordinates didn't work well, so for the time being it
+          ;; is enabled for Windows only
+          (when (eq window-system 'w32)        
+            (set-mouse-position 
+             (selected-frame)
+             (cadr old-mouse-pos)
+             (cddr old-mouse-pos)))
+          (cons point-x point-y))))
 
-  (defun display-current-input-method-title (arg1 &optional arg2 arg3)
-    "display current input method name"
-    (when current-input-method-title
-      (set-mouse-position (selected-frame) (car (th-point-position)) (cdr (th-point-position)))
-      (x-show-tip current-input-method-title (selected-frame) nil 1  20 -30)))
+    (defun display-current-input-method-title (arg1 &optional arg2 arg3)
+      "display current input method name"
+      (when current-input-method-title
+        (set-mouse-position (selected-frame) (car (th-point-position)) (cdr (th-point-position)))
+        (x-show-tip current-input-method-title (selected-frame) nil 1  20 -30)))
 
-  (advice-add 'evil-insert :after 'display-current-input-method-title)
-   
-  ;;解决org表格里面中英文对齐的问题
-  (when (configuration-layer/layer-usedp 'chinese)
-    (when (and (spacemacs/system-is-mac) window-system)
-      (spacemacs//set-monospaced-font "Source Code Pro" "Hiragino Sans GB" 14 16)))
+    (advice-add 'evil-insert :after 'display-current-input-method-title)
+  
+    ;;解决org表格里面中英文对齐的问题
+    (when (configuration-layer/layer-usedp 'chinese)
+      (when (and (spacemacs/system-is-mac) window-system)
+        (spacemacs//set-monospaced-font "Source Code Pro" "Hiragino Sans GB" 14 16)))
 
-  ;; Setting Chinese Font
-  (when (and (spacemacs/system-is-mswindows) window-system)
-    (setq ispell-program-name "aspell")
-    (setq w32-pass-alt-to-system nil)
-    (setq w32-apps-modifier 'super)
-    (dolist (charset '(kana han symbol cjk-misc bopomofo))
-      (set-fontset-font (frame-parameter nil 'font)
-                        charset
-                        (font-spec :family "Microsoft Yahei" :size 14))))
+    ;; Setting Chinese Font
+    (when (and (spacemacs/system-is-mswindows) window-system)
+      (setq ispell-program-name "aspell")
+      (setq w32-pass-alt-to-system nil)
+      (setq w32-apps-modifier 'super)
+      (dolist (charset '(kana han symbol cjk-misc bopomofo))
+        (set-fontset-font (frame-parameter nil 'font)
+                          charset
+                          (font-spec :family "Microsoft Yahei" :size 14))))
 
-  (fset 'evil-visual-update-x-selection 'ignore)
+    (fset 'evil-visual-update-x-selection 'ignore)
 
-  ;; force horizontal split window
-  (setq split-width-threshold 120)
-  ;; (linum-relative-on)
+    ;; force horizontal split window
+    (setq split-width-threshold 120)
+    ;; (linum-relative-on)
 
-  ;; (spacemacs|add-company-backends :modes text-mode)
+    ;; (spacemacs|add-company-backends :modes text-mode)
 
-  (add-hook 'doc-view-mode-hook 'auto-revert-mode)
+    (add-hook 'doc-view-mode-hook 'auto-revert-mode)
 
-  ;; temp fix for ivy-switch-buffer
-  ;; (spacemacs/set-leader-keys "bb" 'helm-mini)
+    ;; temp fix for ivy-switch-buffer
+    ;; (spacemacs/set-leader-keys "bb" 'helm-mini)
 
-  (global-hungry-delete-mode t)
-  (spacemacs|diminish helm-gtags-mode)
-  (spacemacs|diminish ggtags-mode)
-  (spacemacs|diminish which-key-mode)
-  (spacemacs|diminish spacemacs-whitespace-cleanup-mode)
-  (spacemacs|diminish counsel-mode)
+    (global-hungry-delete-mode t)
+    (spacemacs|diminish helm-gtags-mode)
+    (spacemacs|diminish ggtags-mode)
+    (spacemacs|diminish which-key-mode)
+    (spacemacs|diminish spacemacs-whitespace-cleanup-mode)
+    (spacemacs|diminish counsel-mode)
 
-  (evilified-state-evilify-map special-mode-map :mode special-mode)
+    (evilified-state-evilify-map special-mode-map :mode special-mode)
 
-  (add-to-list 'auto-mode-alist
-               '("Capstanfile\\'" . yaml-mode))
+    (add-to-list 'auto-mode-alist
+                 '("Capstanfile\\'" . yaml-mode))
 
-  (defun js-indent-line ()
-    "Indent the current line as JavaScript."
-    (interactive)
-    (let* ((parse-status
-            (save-excursion (syntax-ppss (point-at-bol))))
-           (offset (- (point) (save-excursion (back-to-indentation) (point)))))
-      (if (nth 3 parse-status)
-          'noindent
-        (indent-line-to (js--proper-indentation parse-status))
-        (when (> offset 0) (forward-char offset)))))
+    (defun js-indent-line ()
+      "Indent the current line as JavaScript."
+      (interactive)
+      (let* ((parse-status
+              (save-excursion (syntax-ppss (point-at-bol))))
+             (offset (- (point) (save-excursion (back-to-indentation) (point)))))
+        (if (nth 3 parse-status)
+            'noindent
+          (indent-line-to (js--proper-indentation parse-status))
+          (when (> offset 0) (forward-char offset)))))
 
-  (global-set-key (kbd "<backtab>") 'un-indent-by-removing-4-spaces)
-  (global-set-key (kbd "C-c p s") 'helm-do-ag-project-root)
-  (defun un-indent-by-removing-4-spaces ()
-    "remove 4 spaces from beginning of of line"
-    (interactive)
-    (save-excursion
-      (save-match-data
-        (beginning-of-line)
-        ;; get rid of tabs at beginning of line
-        (when (looking-at "^\\s-+")
-          (untabify (match-beginning 0) (match-end 0)))
-        (when (looking-at (concat "^" (make-string tab-width ?\ )))
-          (replace-match "")))))
+    (global-set-key (kbd "<backtab>") 'un-indent-by-removing-4-spaces)
+    (global-set-key (kbd "C-c p s") 'helm-do-ag-project-root)
+    (defun un-indent-by-removing-4-spaces ()
+      "remove 4 spaces from beginning of of line"
+      (interactive)
+      (save-excursion
+        (save-match-data
+          (beginning-of-line)
+          ;; get rid of tabs at beginning of line
+          (when (looking-at "^\\s-+")
+            (untabify (match-beginning 0) (match-end 0)))
+          (when (looking-at (concat "^" (make-string tab-width ?\ )))
+            (replace-match "")))))
 
-  (defun zilongshanren/toggle-major-mode ()
-    (interactive)
-    (if (eq major-mode 'fundamental-mode)
-        (set-auto-mode)
-      (fundamental-mode)))
-  (spacemacs/set-leader-keys "otm" 'zilongshanren/toggle-major-mode)
+    (defun zilongshanren/toggle-major-mode ()
+      (interactive)
+      (if (eq major-mode 'fundamental-mode)
+          (set-auto-mode)
+        (fundamental-mode)))
+    (spacemacs/set-leader-keys "otm" 'zilongshanren/toggle-major-mode)
 
-  (setq inhibit-compacting-font-caches t)
-  (global-display-line-numbers-mode -1)
+    (setq inhibit-compacting-font-caches t)
+    (global-display-line-numbers-mode -1)
 
-  (defun moon-override-yank-pop (&optional arg)
-    "Delete the region before inserting poped string."
-    (when (and evil-mode (eq 'visual evil-state))
-      (kill-region (region-beginning) (region-end))))
+    (defun moon-override-yank-pop (&optional arg)
+      "Delete the region before inserting poped string."
+      (when (and evil-mode (eq 'visual evil-state))
+        (kill-region (region-beginning) (region-end))))
 
-  (advice-add 'counsel-yank-pop :before #'moon-override-yank-pop)
-  (setq ivy-more-chars-alist '((counsel-ag . 2)
-                               (counsel-grep .2)
-                               (t . 3)))
+    (advice-add 'counsel-yank-pop :before #'moon-override-yank-pop)
+    (setq ivy-more-chars-alist '((counsel-ag . 2)
+                                 (counsel-grep .2)
+                                 (t . 3)))
 
-  ;; boost find file and load saved persp layout  performance
-  ;; which will break some function on windows platform
-  ;; eg. known issues: magit related buffer color, reopen will fix it
-  (when (spacemacs/system-is-mswindows)
-    (progn (setq find-file-hook nil)
-           (setq vc-handled-backends nil)
-           (setq magit-refresh-status-buffer nil)
-           (add-hook 'find-file-hook 'spacemacs/check-large-file)
+    ;; boost find file and load saved persp layout  performance
+    ;; which will break some function on windows platform
+    ;; eg. known issues: magit related buffer color, reopen will fix it
+    (when (spacemacs/system-is-mswindows)
+      (progn (setq find-file-hook nil)
+             (setq vc-handled-backends nil)
+             (setq magit-refresh-status-buffer nil)
+             (add-hook 'find-file-hook 'spacemacs/check-large-file)
 
-           ;; emax.7z in not under pdumper release
-           ;; https://github.com/m-parashar/emax64/releases/tag/pdumper-20180619
-           (defvar emax-root (concat (expand-file-name "~") "/emax"))
+             ;; emax.7z in not under pdumper release
+             ;; https://github.com/m-parashar/emax64/releases/tag/pdumper-20180619
+             (defvar emax-root (concat (expand-file-name "~") "/emax"))
 
-           (when (file-exists-p emax-root)
-             (progn
-               (defvar emax-root (concat (expand-file-name "~") "/emax"))
-               (defvar emax-bin64 (concat emax-root "/bin64"))
-               (defvar emax-mingw64 (concat emax-root "/mingw64/bin"))
-               (defvar emax-lisp (concat emax-root "/lisp"))
+             (when (file-exists-p emax-root)
+               (progn
+                 (defvar emax-root (concat (expand-file-name "~") "/emax"))
+                 (defvar emax-bin64 (concat emax-root "/bin64"))
+                 (defvar emax-mingw64 (concat emax-root "/mingw64/bin"))
+                 (defvar emax-lisp (concat emax-root "/lisp"))
 
-               (setq exec-path (cons emax-bin64 exec-path))
-               (setenv "PATH" (concat emax-bin64 ";" (getenv "PATH")))
+                 (setq exec-path (cons emax-bin64 exec-path))
+                 (setenv "PATH" (concat emax-bin64 ";" (getenv "PATH")))
 
-               (setq exec-path (cons emax-mingw64 exec-path))
-               (setenv "PATH" (concat emax-mingw64 ";" (getenv "PATH")))
-               ))
+                 (setq exec-path (cons emax-mingw64 exec-path))
+                 (setenv "PATH" (concat emax-mingw64 ";" (getenv "PATH")))
+                 ))
 
-           (add-hook 'projectile-mode-hook '(lambda () (remove-hook 'find-file-hook #'projectile-find-file-hook-function)))))
+             (add-hook 'projectile-mode-hook '(lambda () (remove-hook 'find-file-hook #'projectile-find-file-hook-function)))))
 
-  (setq exec-path (cons "/Users/lionqu/.nvm/versions/node/v10.16.0/bin/" exec-path))
-  (setenv "PATH" (concat "/Users/lionqu/.nvm/versions/node/v10.16.0/bin:" (getenv "PATH")))
+    (setq exec-path (cons "/Users/lionqu/.nvm/versions/node/v10.16.0/bin/" exec-path))
+    (setenv "PATH" (concat "/Users/lionqu/.nvm/versions/node/v10.16.0/bin:" (getenv "PATH")))
 
-  (defun counsel-locate-cmd-es (input)
-    "Return a shell command based on INPUT."
-    (counsel-require-program "es.exe")
-    (encode-coding-string (format "es.exe -i -r -p %s"
-                                  (counsel-unquote-regex-parens
-                                   (ivy--regex input t)))
-                          'gbk))
-  ;; (add-hook 'text-mode-hook 'spacemacs/toggle-spelling-checking-on)
+    (defun counsel-locate-cmd-es (input)
+      "Return a shell command based on INPUT."
+      (counsel-require-program "es.exe")
+      (encode-coding-string (format "es.exe -i -r -p %s"
+                                    (counsel-unquote-regex-parens
+                                     (ivy--regex input t)))
+                            'gbk))
+    ;; (add-hook 'text-mode-hook 'spacemacs/toggle-spelling-checking-on)
 
-  ;; (add-hook 'org-mode-hook 'emojify-mode)
-  ;; (add-hook 'org-mode-hook 'auto-fill-mode)
+    ;; (add-hook 'org-mode-hook 'emojify-mode)
+    ;; (add-hook 'org-mode-hook 'auto-fill-mode)
 
-  ;; https://emacs-china.org/t/ox-hugo-auto-fill-mode-markdown/9547/4
-  (defadvice org-hugo-paragraph (before org-hugo-paragraph-advice
-                                        (paragraph contents info) activate)
-    "Join consecutive Chinese lines into a single long line without
+    ;; https://emacs-china.org/t/ox-hugo-auto-fill-mode-markdown/9547/4
+    (defadvice org-hugo-paragraph (before org-hugo-paragraph-advice
+                                          (paragraph contents info) activate)
+      "Join consecutive Chinese lines into a single long line without
 unwanted space when exporting org-mode to hugo markdown."
-    (let* ((origin-contents (ad-get-arg 1))
-           (fix-regexp "[[:multibyte:]]")
-           (fixed-contents
-            (replace-regexp-in-string
-             (concat
-              "\\(" fix-regexp "\\) *\n *\\(" fix-regexp "\\)") "\\1\\2" origin-contents)))
-      (ad-set-arg 1 fixed-contents)))
+      (let* ((origin-contents (ad-get-arg 1))
+             (fix-regexp "[[:multibyte:]]")
+             (fixed-contents
+              (replace-regexp-in-string
+               (concat
+                "\\(" fix-regexp "\\) *\n *\\(" fix-regexp "\\)") "\\1\\2" origin-contents)))
+        (ad-set-arg 1 fixed-contents)))
 
-  ;; fix for the magit popup doesn't have a q keybindings
-  (with-eval-after-load 'transient
-    (transient-bind-q-to-quit))
+    ;; fix for the magit popup doesn't have a q keybindings
+    (with-eval-after-load 'transient
+      (transient-bind-q-to-quit))
 
-  ;; fix for the lsp error
-  (defvar spacemacs-jump-handlers-fundamental-mode nil))
+    ;; fix for the lsp error
+    (defvar spacemacs-jump-handlers-fundamental-mode nil))
 
 (setq custom-file (expand-file-name "custom.el" dotspacemacs-directory))
 (load custom-file 'no-error 'no-message)
@@ -771,4 +821,4 @@ unwanted space when exporting org-mode to hugo markdown."
 This is an auto-generated function, do not modify its content directly, use
 Emacs customize menu instead.
 This function is called at the very end of Spacemacs initialization."
-)
+  )

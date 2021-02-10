@@ -91,6 +91,8 @@
       (setq org-log-done t)
       ;; 设置导出ascii时不折行
       (setq org-ascii-text-width 9999)
+      ;; agenda view直接查看标题内容
+      (setq org-agenda-follow-indirect t)
       ;; 设置org文件初始折叠状态为展开
       ;; (setq org-startup-folded nil)
       ;; 加密文章
