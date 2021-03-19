@@ -600,219 +600,387 @@ dump."
   ;; (run-at-time 1 10 'indent-org-block-automatically)
   ;; js文件用vscode打开
   (eval-after-load "org"
-     '(progn
-        ;; .txt files aren't in the list initially, but in case that changes
-        ;; in a future version of org, use if to avoid errors
-        (if (assoc "\\.js\\'" org-file-apps)
-            (setcdr (assoc "\\.js\\'" org-file-apps) "code.exe %s")
-          (add-to-list 'org-file-apps '("\\.js\\'" . "code %s") t))
-        ;; Change .pdf association directly within the alist
-        (setcdr (assoc "\\.pdf\\'" org-file-apps) "evince %s")))
-    ;; ====================================以下是spacemacs默认配置
-    (eval-and-compile
-      (if (fboundp 'window-inside-edges)
-          ;; Emacs devel.
-          (defalias 'th-window-edges
-            'window-inside-edges)
-        ;; Emacs 21
+    '(progn
+       ;; .txt files aren't in the list initially, but in case that changes
+       ;; in a future version of org, use if to avoid errors
+       (if (assoc "\\.js\\'" org-file-apps)
+           (setcdr (assoc "\\.js\\'" org-file-apps) "cmd.exe %s")
+         (add-to-list 'org-file-apps '("\\.js\\'" . "cmd %s") t))
+       ;; Change .pdf association directly within the alist
+       (setcdr (assoc "\\.pdf\\'" org-file-apps) "evince %s")))
+  ;; (setq org-image-actual-width nil)
+  ;; (add-to-list 'load-path (expand-file-name "C:/Users/Administrator/AppData/Roaming/.spacemacs.d"))
+
+  ;; (require 'awesome-tab)
+
+  ;; (awesome-tab-mode t)
+  (setq    org-link-frame-setup
+           '(
+             (vm . vm-visit-folder)
+             (vm-imap . vm-visit-imap-folder)
+             (gnus . gnus)
+             (file . find-file)
+             (wl . wl-frame)
+             ))
+  (defvar org-startup-folded '(showall))
+  (setq org-image-actual-width nil)
+  
+  (with-eval-after-load 'org (defvar org-inline-image-resize-function
+                               #'org-inline-image-resize
+                               "Function that takes a filename and resize argument and returns
+ a new filename pointing to the resized image.")
+
+                        (defun org-inline-image-resize (fname resize-options)
+                          "Resize FNAME with RESIZE-OPTIONS.
+RESIZE-OPTIONS are passed to \"mogrify resized-fname -resize resize-options\".
+RESIZE-OPTIONS could be:
+N% to scale the image by a percentage.
+N to set the width, keeping the aspect ratio constant.
+xN to set the height, keeping the aspect ratio constant.
+NxM! to set the width and height, ignoring the aspect ratio.
+See http://www.imagemagick.org/Usage/resize/#resize for more options."
+                          (let* ((md5-hash (with-temp-buffer (insert-file-contents fname)
+                                                             (insert (format "%s" resize-options))
+                                                             (md5 (buffer-string))))
+                                 (resized-fname (concat (expand-file-name
+                                                         md5-hash
+                                                         temporary-file-directory)
+                                                        "."
+                                                        (file-name-extension fname)))
+                                 (cmd (format "mogrify -resize %s %s"
+                                              resize-options
+                                              resized-fname)))
+                            (if (not (executable-find "mogrify"))
+                                (progn
+                                  (message "No mogrify executable found. To eliminate this message, set  `org-inline-image-resize-function' to nil or install imagemagick from http://www.imagemagick.org/script/binary-releases.php")
+                                  fname)
+                              (unless (file-exists-p resized-fname)
+                                (copy-file fname resized-fname)
+                                (shell-command cmd))
+                              resized-fname)))
+
+                        ;; this is copied and modified from org.el
+                        (defun org-display-inline-images (&optional include-linked refresh beg end)
+                          "Display inline images.
+An inline image is a link which follows either of these
+conventions:
+  1. Its path is a file with an extension matching return value
+     from `image-file-name-regexp' and it has no contents.
+  2. Its description consists in a single link of the previous
+     type.
+When optional argument INCLUDE-LINKED is non-nil, also links with
+a text description part will be inlined.  This can be nice for
+a quick look at those images, but it does not reflect what
+exported files will look like.
+When optional argument REFRESH is non-nil, refresh existing
+images between BEG and END.  This will create new image displays
+only if necessary.  BEG and END default to the buffer
+boundaries."
+                          (interactive "P")
+                          (when (display-graphic-p)
+                            (unless refresh
+                              (org-remove-inline-images)
+                              (when (fboundp 'clear-image-cache) (clear-image-cache)))
+                            (org-with-wide-buffer
+                             (goto-char (or beg (point-min)))
+                             (let ((case-fold-search t)
+                                   (file-extension-re (image-file-name-regexp)))
+                               (while (re-search-forward "[][]\\[\\(?:file\\|[./~]\\)" end t)
+                                 (let ((link (save-match-data (org-element-context))))
+                                   ;; Check if we're at an inline image.
+                                   (when (and (equal (org-element-property :type link) "file")
+                                              (or include-linked
+                                                  (not (org-element-property :contents-begin link)))
+                                              (let ((parent (org-element-property :parent link)))
+                                                (or (not (eq (org-element-type parent) 'link))
+                                                    (not (cdr (org-element-contents parent)))))
+                                              (org-string-match-p file-extension-re
+                                                                  (org-element-property :path link)))
+                                     (let ((file (expand-file-name
+                                                  (org-link-unescape
+                                                   (org-element-property :path link)))))
+                                       (when (file-exists-p file)
+                                         (let ((width
+                                                ;; Apply `org-image-actual-width' specifications.
+                                                (cond
+                                                 ((and (not (image-type-available-p 'imagemagick))
+                                                       (not org-inline-image-resize-function))
+                                                  nil)
+                                                 ((eq org-image-actual-width t) nil)
+                                                 ((listp org-image-actual-width)
+                                                  (or
+                                                   ;; First try to find a width among
+                                                   ;; attributes associated to the paragraph
+                                                   ;; containing link.
+                                                   (let* ((paragraph
+                                                           (let ((e link))
+                                                             (while (and (setq e (org-element-property
+                                                                                  :parent e))
+                                                                         (not (eq (org-element-type e)
+                                                                                  'paragraph))))
+                                                             e))
+                                                          (attr_org (org-element-property :attr_org paragraph)))
+                                                     (when attr_org
+                                                       (plist-get
+                                                        (org-export-read-attribute :attr_org  paragraph) :width)))
+                                                   ;; Otherwise, fall-back to provided number.
+                                                   (car org-image-actual-width)))
+                                                 ((numberp org-image-actual-width)
+                                                  org-image-actual-width)))
+                                               (old (get-char-property-and-overlay
+                                                     (org-element-property :begin link)
+                                                     'org-image-overlay))) 
+                                           (if (and (car-safe old) refresh)
+                                               (image-refresh (overlay-get (cdr old) 'display))
+                                             
+                                             (when (and width org-inline-image-resize-function)
+                                               (setq file (funcall  org-inline-image-resize-function file width)
+                                                     width nil))
+                                             (let ((image (create-image file
+                                                                        (cond
+                                                                         ((image-type-available-p 'imagemagick)
+                                                                          (and width 'imagemagick))
+                                                                         (t nil)) 
+                                                                        nil
+                                                                        :width width)))
+                                               (when image
+                                                 (let* ((link
+                                                         ;; If inline image is the description
+                                                         ;; of another link, be sure to
+                                                         ;; consider the latter as the one to
+                                                         ;; apply the overlay on.
+                                                         (let ((parent
+                                                                (org-element-property :parent link)))
+                                                           (if (eq (org-element-type parent) 'link)
+                                                               parent
+                                                             link)))
+                                                        (ov (make-overlay
+                                                             (org-element-property :begin link)
+                                                             (progn
+                                                               (goto-char
+                                                                (org-element-property :end link))
+                                                               (skip-chars-backward " \t")
+                                                               (point)))))
+                                                   (overlay-put ov 'display image)
+                                                   (overlay-put ov 'face 'default)
+                                                   (overlay-put ov 'org-image-overlay t)
+                                                   (overlay-put
+                                                    ov 'modification-hooks
+                                                    (list 'org-display-inline-remove-overlay))
+                                                   (push ov org-inline-image-overlays)))))))))))))))
+
+                        ;; * Enable pdf and eps images in org-mode
+                        ;; Suggested on the org-mode maillist by Julian Burgos
+                        ;; (add-to-list 'image-file-name-extensions "pdf")
+                        (add-to-list 'image-file-name-extensions "eps")
+
+                        (add-to-list 'image-type-file-name-regexps '("\\.eps\\'" . imagemagick))
+                        (add-to-list 'image-file-name-extensions "eps") )
+  ;; ====================================以下是spacemacs默认配置
+  (eval-and-compile
+    (if (fboundp 'window-inside-edges)
+        ;; Emacs devel.
         (defalias 'th-window-edges
-          'window-edges)
-        ))
+          'window-inside-edges)
+      ;; Emacs 21
+      (defalias 'th-window-edges
+        'window-edges)
+      ))
   
-    (defun th-point-position ()
-      "Return the location of POINT as positioned on the selected frame.
+  (defun th-point-position ()
+    "Return the location of POINT as positioned on the selected frame.
 Return a cons cell (X . Y)"
-      (let* ((w (selected-window))
-             (f (selected-frame))
-             (edges (th-window-edges w))
-             (col (current-column))
-             (row (count-lines (window-start w) (point)))
-             (x (+ (car edges) col))
-             (y (+ (car (cdr edges)) row)))
-        (cons x y)))
+    (let* ((w (selected-window))
+           (f (selected-frame))
+           (edges (th-window-edges w))
+           (col (current-column))
+           (row (count-lines (window-start w) (point)))
+           (x (+ (car edges) col))
+           (y (+ (car (cdr edges)) row)))
+      (cons x y)))
 
 
-    (defun get-point-pixel-position ()
-      "Return the position of point in pixels within the frame."
-      (let ((point-pos (th-point-position)))
-        (th-get-pixel-position (car point-pos) (cdr point-pos))))
+  (defun get-point-pixel-position ()
+    "Return the position of point in pixels within the frame."
+    (let ((point-pos (th-point-position)))
+      (th-get-pixel-position (car point-pos) (cdr point-pos))))
   
 
-    (defun th-get-pixel-position (x y)
-      "Return the pixel position of location X Y (1-based) within the frame."
-      (let ((old-mouse-pos (mouse-position)))
-        (set-mouse-position (selected-frame)
-                            ;; the fringe is the 0th column, so x is OK
-                            x
-                            (1- y))
-        (let ((point-x (car (cdr (mouse-pixel-position))))
-              (point-y (cdr (cdr (mouse-pixel-position)))))
-          ;; on Linux with the Enlightenment window manager restoring the
-          ;; mouse coordinates didn't work well, so for the time being it
-          ;; is enabled for Windows only
-          (when (eq window-system 'w32)        
-            (set-mouse-position 
-             (selected-frame)
-             (cadr old-mouse-pos)
-             (cddr old-mouse-pos)))
-          (cons point-x point-y))))
+  (defun th-get-pixel-position (x y)
+    "Return the pixel position of location X Y (1-based) within the frame."
+    (let ((old-mouse-pos (mouse-position)))
+      (set-mouse-position (selected-frame)
+                          ;; the fringe is the 0th column, so x is OK
+                          x
+                          (1- y))
+      (let ((point-x (car (cdr (mouse-pixel-position))))
+            (point-y (cdr (cdr (mouse-pixel-position)))))
+        ;; on Linux with the Enlightenment window manager restoring the
+        ;; mouse coordinates didn't work well, so for the time being it
+        ;; is enabled for Windows only
+        (when (eq window-system 'w32)        
+          (set-mouse-position 
+           (selected-frame)
+           (cadr old-mouse-pos)
+           (cddr old-mouse-pos)))
+        (cons point-x point-y))))
 
-    (defun display-current-input-method-title (arg1 &optional arg2 arg3)
-      "display current input method name"
-      (when current-input-method-title
-        (set-mouse-position (selected-frame) (car (th-point-position)) (cdr (th-point-position)))
-        (x-show-tip current-input-method-title (selected-frame) nil 1  20 -30)))
+  (defun display-current-input-method-title (arg1 &optional arg2 arg3)
+    "display current input method name"
+    (when current-input-method-title
+      (set-mouse-position (selected-frame) (car (th-point-position)) (cdr (th-point-position)))
+      (x-show-tip current-input-method-title (selected-frame) nil 1  20 -30)))
 
-    (advice-add 'evil-insert :after 'display-current-input-method-title)
+  (advice-add 'evil-insert :after 'display-current-input-method-title)
   
-    ;;解决org表格里面中英文对齐的问题
-    (when (configuration-layer/layer-usedp 'chinese)
-      (when (and (spacemacs/system-is-mac) window-system)
-        (spacemacs//set-monospaced-font "Source Code Pro" "Hiragino Sans GB" 14 16)))
+  ;;解决org表格里面中英文对齐的问题
+  (when (configuration-layer/layer-usedp 'chinese)
+    (when (and (spacemacs/system-is-mac) window-system)
+      (spacemacs//set-monospaced-font "Source Code Pro" "Hiragino Sans GB" 14 16)))
 
-    ;; Setting Chinese Font
-    (when (and (spacemacs/system-is-mswindows) window-system)
-      (setq ispell-program-name "aspell")
-      (setq w32-pass-alt-to-system nil)
-      (setq w32-apps-modifier 'super)
-      (dolist (charset '(kana han symbol cjk-misc bopomofo))
-        (set-fontset-font (frame-parameter nil 'font)
-                          charset
-                          (font-spec :family "Microsoft Yahei" :size 14))))
+  ;; Setting Chinese Font
+  (when (and (spacemacs/system-is-mswindows) window-system)
+    (setq ispell-program-name "aspell")
+    (setq w32-pass-alt-to-system nil)
+    (setq w32-apps-modifier 'super)
+    (dolist (charset '(kana han symbol cjk-misc bopomofo))
+      (set-fontset-font (frame-parameter nil 'font)
+                        charset
+                        (font-spec :family "Microsoft Yahei" :size 14))))
 
-    (fset 'evil-visual-update-x-selection 'ignore)
+  (fset 'evil-visual-update-x-selection 'ignore)
 
-    ;; force horizontal split window
-    (setq split-width-threshold 120)
-    ;; (linum-relative-on)
+  ;; force horizontal split window
+  (setq split-width-threshold 120)
+  ;; (linum-relative-on)
 
-    ;; (spacemacs|add-company-backends :modes text-mode)
+  ;; (spacemacs|add-company-backends :modes text-mode)
 
-    (add-hook 'doc-view-mode-hook 'auto-revert-mode)
+  (add-hook 'doc-view-mode-hook 'auto-revert-mode)
 
-    ;; temp fix for ivy-switch-buffer
-    ;; (spacemacs/set-leader-keys "bb" 'helm-mini)
+  ;; temp fix for ivy-switch-buffer
+  ;; (spacemacs/set-leader-keys "bb" 'helm-mini)
 
-    (global-hungry-delete-mode t)
-    (spacemacs|diminish helm-gtags-mode)
-    (spacemacs|diminish ggtags-mode)
-    (spacemacs|diminish which-key-mode)
-    (spacemacs|diminish spacemacs-whitespace-cleanup-mode)
-    (spacemacs|diminish counsel-mode)
+  (global-hungry-delete-mode t)
+  (spacemacs|diminish helm-gtags-mode)
+  (spacemacs|diminish ggtags-mode)
+  (spacemacs|diminish which-key-mode)
+  (spacemacs|diminish spacemacs-whitespace-cleanup-mode)
+  (spacemacs|diminish counsel-mode)
 
-    (evilified-state-evilify-map special-mode-map :mode special-mode)
+  (evilified-state-evilify-map special-mode-map :mode special-mode)
 
-    (add-to-list 'auto-mode-alist
-                 '("Capstanfile\\'" . yaml-mode))
+  (add-to-list 'auto-mode-alist
+               '("Capstanfile\\'" . yaml-mode))
 
-    (defun js-indent-line ()
-      "Indent the current line as JavaScript."
-      (interactive)
-      (let* ((parse-status
-              (save-excursion (syntax-ppss (point-at-bol))))
-             (offset (- (point) (save-excursion (back-to-indentation) (point)))))
-        (if (nth 3 parse-status)
-            'noindent
-          (indent-line-to (js--proper-indentation parse-status))
-          (when (> offset 0) (forward-char offset)))))
+  (defun js-indent-line ()
+    "Indent the current line as JavaScript."
+    (interactive)
+    (let* ((parse-status
+            (save-excursion (syntax-ppss (point-at-bol))))
+           (offset (- (point) (save-excursion (back-to-indentation) (point)))))
+      (if (nth 3 parse-status)
+          'noindent
+        (indent-line-to (js--proper-indentation parse-status))
+        (when (> offset 0) (forward-char offset)))))
 
-    (global-set-key (kbd "<backtab>") 'un-indent-by-removing-4-spaces)
-    (global-set-key (kbd "C-c p s") 'helm-do-ag-project-root)
-    (defun un-indent-by-removing-4-spaces ()
-      "remove 4 spaces from beginning of of line"
-      (interactive)
-      (save-excursion
-        (save-match-data
-          (beginning-of-line)
-          ;; get rid of tabs at beginning of line
-          (when (looking-at "^\\s-+")
-            (untabify (match-beginning 0) (match-end 0)))
-          (when (looking-at (concat "^" (make-string tab-width ?\ )))
-            (replace-match "")))))
+  (global-set-key (kbd "<backtab>") 'un-indent-by-removing-4-spaces)
+  (global-set-key (kbd "C-c p s") 'helm-do-ag-project-root)
+  (defun un-indent-by-removing-4-spaces ()
+    "remove 4 spaces from beginning of of line"
+    (interactive)
+    (save-excursion
+      (save-match-data
+        (beginning-of-line)
+        ;; get rid of tabs at beginning of line
+        (when (looking-at "^\\s-+")
+          (untabify (match-beginning 0) (match-end 0)))
+        (when (looking-at (concat "^" (make-string tab-width ?\ )))
+          (replace-match "")))))
 
-    (defun zilongshanren/toggle-major-mode ()
-      (interactive)
-      (if (eq major-mode 'fundamental-mode)
-          (set-auto-mode)
-        (fundamental-mode)))
-    (spacemacs/set-leader-keys "otm" 'zilongshanren/toggle-major-mode)
+  (defun zilongshanren/toggle-major-mode ()
+    (interactive)
+    (if (eq major-mode 'fundamental-mode)
+        (set-auto-mode)
+      (fundamental-mode)))
+  (spacemacs/set-leader-keys "otm" 'zilongshanren/toggle-major-mode)
 
-    (setq inhibit-compacting-font-caches t)
-    (global-display-line-numbers-mode -1)
+  (setq inhibit-compacting-font-caches t)
+  (global-display-line-numbers-mode -1)
 
-    (defun moon-override-yank-pop (&optional arg)
-      "Delete the region before inserting poped string."
-      (when (and evil-mode (eq 'visual evil-state))
-        (kill-region (region-beginning) (region-end))))
+  (defun moon-override-yank-pop (&optional arg)
+    "Delete the region before inserting poped string."
+    (when (and evil-mode (eq 'visual evil-state))
+      (kill-region (region-beginning) (region-end))))
 
-    (advice-add 'counsel-yank-pop :before #'moon-override-yank-pop)
-    (setq ivy-more-chars-alist '((counsel-ag . 2)
-                                 (counsel-grep .2)
-                                 (t . 3)))
+  (advice-add 'counsel-yank-pop :before #'moon-override-yank-pop)
+  (setq ivy-more-chars-alist '((counsel-ag . 2)
+                               (counsel-grep .2)
+                               (t . 3)))
 
-    ;; boost find file and load saved persp layout  performance
-    ;; which will break some function on windows platform
-    ;; eg. known issues: magit related buffer color, reopen will fix it
-    (when (spacemacs/system-is-mswindows)
-      (progn (setq find-file-hook nil)
-             (setq vc-handled-backends nil)
-             (setq magit-refresh-status-buffer nil)
-             (add-hook 'find-file-hook 'spacemacs/check-large-file)
+  ;; boost find file and load saved persp layout  performance
+  ;; which will break some function on windows platform
+  ;; eg. known issues: magit related buffer color, reopen will fix it
+  (when (spacemacs/system-is-mswindows)
+    (progn (setq find-file-hook nil)
+           (setq vc-handled-backends nil)
+           (setq magit-refresh-status-buffer nil)
+           (add-hook 'find-file-hook 'spacemacs/check-large-file)
 
-             ;; emax.7z in not under pdumper release
-             ;; https://github.com/m-parashar/emax64/releases/tag/pdumper-20180619
-             (defvar emax-root (concat (expand-file-name "~") "/emax"))
+           ;; emax.7z in not under pdumper release
+           ;; https://github.com/m-parashar/emax64/releases/tag/pdumper-20180619
+           (defvar emax-root (concat (expand-file-name "~") "/emax"))
 
-             (when (file-exists-p emax-root)
-               (progn
-                 (defvar emax-root (concat (expand-file-name "~") "/emax"))
-                 (defvar emax-bin64 (concat emax-root "/bin64"))
-                 (defvar emax-mingw64 (concat emax-root "/mingw64/bin"))
-                 (defvar emax-lisp (concat emax-root "/lisp"))
+           (when (file-exists-p emax-root)
+             (progn
+               (defvar emax-root (concat (expand-file-name "~") "/emax"))
+               (defvar emax-bin64 (concat emax-root "/bin64"))
+               (defvar emax-mingw64 (concat emax-root "/mingw64/bin"))
+               (defvar emax-lisp (concat emax-root "/lisp"))
 
-                 (setq exec-path (cons emax-bin64 exec-path))
-                 (setenv "PATH" (concat emax-bin64 ";" (getenv "PATH")))
+               (setq exec-path (cons emax-bin64 exec-path))
+               (setenv "PATH" (concat emax-bin64 ";" (getenv "PATH")))
 
-                 (setq exec-path (cons emax-mingw64 exec-path))
-                 (setenv "PATH" (concat emax-mingw64 ";" (getenv "PATH")))
-                 ))
+               (setq exec-path (cons emax-mingw64 exec-path))
+               (setenv "PATH" (concat emax-mingw64 ";" (getenv "PATH")))
+               ))
 
-             (add-hook 'projectile-mode-hook '(lambda () (remove-hook 'find-file-hook #'projectile-find-file-hook-function)))))
+           (add-hook 'projectile-mode-hook '(lambda () (remove-hook 'find-file-hook #'projectile-find-file-hook-function)))))
 
-    (setq exec-path (cons "/Users/lionqu/.nvm/versions/node/v10.16.0/bin/" exec-path))
-    (setenv "PATH" (concat "/Users/lionqu/.nvm/versions/node/v10.16.0/bin:" (getenv "PATH")))
+  (setq exec-path (cons "/Users/lionqu/.nvm/versions/node/v10.16.0/bin/" exec-path))
+  (setenv "PATH" (concat "/Users/lionqu/.nvm/versions/node/v10.16.0/bin:" (getenv "PATH")))
 
-    (defun counsel-locate-cmd-es (input)
-      "Return a shell command based on INPUT."
-      (counsel-require-program "es.exe")
-      (encode-coding-string (format "es.exe -i -r -p %s"
-                                    (counsel-unquote-regex-parens
-                                     (ivy--regex input t)))
-                            'gbk))
-    ;; (add-hook 'text-mode-hook 'spacemacs/toggle-spelling-checking-on)
+  (defun counsel-locate-cmd-es (input)
+    "Return a shell command based on INPUT."
+    (counsel-require-program "es.exe")
+    (encode-coding-string (format "es.exe -i -r -p %s"
+                                  (counsel-unquote-regex-parens
+                                   (ivy--regex input t)))
+                          'gbk))
+  ;; (add-hook 'text-mode-hook 'spacemacs/toggle-spelling-checking-on)
 
-    ;; (add-hook 'org-mode-hook 'emojify-mode)
-    ;; (add-hook 'org-mode-hook 'auto-fill-mode)
+  ;; (add-hook 'org-mode-hook 'emojify-mode)
+  ;; (add-hook 'org-mode-hook 'auto-fill-mode)
 
-    ;; https://emacs-china.org/t/ox-hugo-auto-fill-mode-markdown/9547/4
-    (defadvice org-hugo-paragraph (before org-hugo-paragraph-advice
-                                          (paragraph contents info) activate)
-      "Join consecutive Chinese lines into a single long line without
+  ;; https://emacs-china.org/t/ox-hugo-auto-fill-mode-markdown/9547/4
+  (defadvice org-hugo-paragraph (before org-hugo-paragraph-advice
+                                        (paragraph contents info) activate)
+    "Join consecutive Chinese lines into a single long line without
 unwanted space when exporting org-mode to hugo markdown."
-      (let* ((origin-contents (ad-get-arg 1))
-             (fix-regexp "[[:multibyte:]]")
-             (fixed-contents
-              (replace-regexp-in-string
-               (concat
-                "\\(" fix-regexp "\\) *\n *\\(" fix-regexp "\\)") "\\1\\2" origin-contents)))
-        (ad-set-arg 1 fixed-contents)))
+    (let* ((origin-contents (ad-get-arg 1))
+           (fix-regexp "[[:multibyte:]]")
+           (fixed-contents
+            (replace-regexp-in-string
+             (concat
+              "\\(" fix-regexp "\\) *\n *\\(" fix-regexp "\\)") "\\1\\2" origin-contents)))
+      (ad-set-arg 1 fixed-contents)))
 
-    ;; fix for the magit popup doesn't have a q keybindings
-    (with-eval-after-load 'transient
-      (transient-bind-q-to-quit))
+  ;; fix for the magit popup doesn't have a q keybindings
+  (with-eval-after-load 'transient
+    (transient-bind-q-to-quit))
 
-    ;; fix for the lsp error
-    (defvar spacemacs-jump-handlers-fundamental-mode nil))
+  ;; fix for the lsp error
+  (defvar spacemacs-jump-handlers-fundamental-mode nil))
 
 (setq custom-file (expand-file-name "custom.el" dotspacemacs-directory))
 (load custom-file 'no-error 'no-message)
